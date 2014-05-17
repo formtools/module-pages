@@ -5,7 +5,7 @@ var pages_ns = {};
 pages_ns.current_editor = null; // this is overwritten by the page. Values: "codemirror", "tinymce"
 
 $(function() {
-  if ($("#wysiwyg_content").length) {
+  if ($("#wysiwyg_content").length && $("#tinymce_available").val() == "yes") {
     $("#wysiwyg_content").tinymce({
       script_url: g.root_url + "/modules/field_type_tinymce/tinymce/tiny_mce.js",
       theme:      "advanced",
@@ -40,6 +40,7 @@ pages_ns.toggle_wysiwyg_field = function(is_checked) {
     pages_ns.enable_editor("codemirror");
   }
 }
+
 
 /**
  * Whenever the user changes the content type (HTML, PHP or Smarty), the appropriate editor - Code Mirror

@@ -35,9 +35,10 @@ $page_vars = array();
 $page_vars["head_title"] = $L["phrase_edit_page"];
 $page_vars["page_id"] = $page_id;
 $page_vars["page_info"] = $page_info;
+$page_vars["tinymce_available"] = ($tinymce_available ? "yes" : "no");
 $page_vars["head_string"] =<<<EOF
-  <script type="text/javascript" src="$g_root_url/global/codemirror/js/codemirror.js"></script>
-  <script type="text/javascript" src="scripts/pages.js"></script>
+  <script src="$g_root_url/global/codemirror/js/codemirror.js"></script>
+  <script src="scripts/pages.js"></script>
 EOF;
 
 if ($tinymce_available)
@@ -53,7 +54,7 @@ if (typeof pages_ns == undefined) {
 pages_ns.current_editor = "$editor";
 var rules = [];
 rsv.onCompleteHandler = function() {
-  $("use_wysiwyg_hidden").value = ($("uwe").checked) ? "yes" : "no";
+  $("#use_wysiwyg_hidden").val($("#uwe").attr("checked") ? "yes" : "no");
   ft.select_all(document.pages_form["selected_client_ids[]"]);
   return true;
 }

@@ -17,6 +17,7 @@
 
   <form action="edit.php" method="post" name="pages_form" onsubmit="return rsv.validate(this, rules)">
     <input type="hidden" name="use_wysiwyg_hidden" id="use_wysiwyg_hidden" value="" />
+    <input type="hidden" id="tinymce_available" value="{$tinymce_available}" />
 
     <table cellspacing="1" cellpadding="1" border="0" width="100%">
     <tr>
@@ -55,14 +56,16 @@
 
       	  <script type="text/javascript">
       	  var html_editor = new CodeMirror.fromTextArea("codemirror_content", {literal}{{/literal}
-          parserfile: ["parsejavascript.js", "tokenizejavascript.js"],
-      	  path: "{$g_root_url}/global/codemirror/js/",
-      	  stylesheet: "{$g_root_url}/global/codemirror/css/jscolors.css"
+            parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js",
+                         "../contrib/php/js/tokenizephp.js", "../contrib/php/js/parsephp.js", "../contrib/php/js/parsephphtmlmixed.js"],
+            stylesheet: ["{$g_root_url}/global/codemirror/css/xmlcolors.css", "{$g_root_url}/global/codemirror/css/jscolors.css",
+                         "{$g_root_url}/global/codemirror/css/csscolors.css", "{$g_root_url}/global/codemirror/contrib/php/css/phpcolors.css"],
+            path:        "{$g_root_url}/global/codemirror/js/"
       	  {literal}});{/literal}
       	  </script>
       	</div>
 
-        {if $tinymce_available}
+        {if $tinymce_available == "yes"}
       	  <input type="checkbox" id="uwe" name="use_wysiwyg" checked onchange="pages_ns.toggle_wysiwyg_field(this.checked)" />
       	    <label for="uwe">Use WYSIWYG editor</label>
       	  <br />

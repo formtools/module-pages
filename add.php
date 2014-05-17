@@ -8,10 +8,10 @@ $tinymce_available = ft_check_module_available("field_type_tinymce");
 
 $page_vars = array();
 $page_vars["head_title"] = $L["phrase_add_page"];
-$page_vars["tinymce_available"] = $tinymce_available;
+$page_vars["tinymce_available"] = ($tinymce_available ? "yes" : "no");
 $page_vars["head_string"] =<<< EOF
-  <script type="text/javascript" src="$g_root_url/global/codemirror/js/codemirror.js"></script>
-  <script type="text/javascript" src="scripts/pages.js"></script>
+  <script src="$g_root_url/global/codemirror/js/codemirror.js"></script>
+  <script src="scripts/pages.js"></script>
 EOF;
 
 if ($tinymce_available)

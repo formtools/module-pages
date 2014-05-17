@@ -80,7 +80,7 @@
 
   <form action="add.php" method="post">
     <p>
-      <input type="submit" value="{$L.phrase_add_page|upper}" />
+      <input type="submit" value="{$L.phrase_add_page}" />
     </p>
   </form>
 

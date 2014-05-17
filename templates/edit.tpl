@@ -18,6 +18,7 @@
   <form action="edit.php" method="post" name="pages_form" onsubmit="return rsv.validate(this, rules)">
     <input type="hidden" name="page_id" value="{$page_id}" />
     <input type="hidden" name="use_wysiwyg_hidden" id="use_wysiwyg_hidden" value="" />
+    <input type="hidden" id="tinymce_available" value="{$tinymce_available}" />
 
     <table cellspacing="1" cellpadding="1" border="0" width="100%">
     <tr>
@@ -54,26 +55,30 @@
       	</div>
 
         <!-- CodeMirror is used for everything except the WYSIWYG editor -->
-      	<div id="codemirror_div" {if $page_info.content_type == "html" && !($page_info.content_type == "html" && $page_info.use_wysiwyg == "no")}style="display:none"{/if}>
+      	<div id="codemirror_div" {if $page_info.use_wysiwyg == "yes" && $page_info.content_type == "html"}style="display: none"{/if}>
       	  <div style="border: 1px solid #666666; padding: 3px">
-      	    <textarea name="codemirror_content" id="codemirror_content" style="width:100%; height:300px">{$page_info.content}</textarea>
+      	    <textarea name="codemirror_content" id="codemirror_content" style="width:100%; height:300px">{$page_info.content|escape}</textarea>
       	  </div>
 
       	  <script>
+      	  {* load the appropriate parser on page load *}
       	  var html_editor = new CodeMirror.fromTextArea("codemirror_content", {literal}{{/literal}
-          parserfile: ["parsejavascript.js", "tokenizejavascript.js"],
-      	  path: "{$g_root_url}/global/codemirror/js/",
-      	  stylesheet: "{$g_root_url}/global/codemirror/css/jscolors.css"
+        	  parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js",
+                         "../contrib/php/js/tokenizephp.js", "../contrib/php/js/parsephp.js", "../contrib/php/js/parsephphtmlmixed.js"],
+            stylesheet: ["{$g_root_url}/global/codemirror/css/xmlcolors.css", "{$g_root_url}/global/codemirror/css/jscolors.css",
+                         "{$g_root_url}/global/codemirror/css/csscolors.css", "{$g_root_url}/global/codemirror/contrib/php/css/phpcolors.css"],
+            path:        "{$g_root_url}/global/codemirror/js/"
       	  {literal}});{/literal}
       	  </script>
       	</div>
 
+       <div {if $tinymce_available == "no"}class="hidden"{/if}>
       	<input type="checkbox" id="uwe" name="use_wysiwyg"
       	  {if $page_info.use_wysiwyg == "yes"}checked{/if}
       	  {if $page_info.content_type != "html"}disabled{/if}
       	  onchange="pages_ns.toggle_wysiwyg_field(this.checked)" />
       	  <label for="uwe">Use WYSIWYG editor</label>
-      	<br />
+      	</div>
       	<br />
       </td>
     </tr>
