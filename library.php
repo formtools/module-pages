@@ -295,6 +295,40 @@ function pages__install($module_id)
 }
 
 
+/*
+function pages__update($old_version, $new_version)
+{
+  global $g_table_prefix;
+
+  $old_version_info = ft_get_version_info($old_version);
+  $new_version_info = ft_get_version_info($new_version);
+
+  if ($old_version_info["release_date"] < 20091020)
+  {
+    // update the pages table
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD content_type ENUM('html','php','smarty') NOT NULL DEFAULT 'html' AFTER page_name");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD use_wysiwyg ENUM('yes','no') NOT NULL DEFAULT 'yes' AFTER content_type");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD access_type ENUM('admin','public','private') NOT NULL DEFAULT 'admin' AFTER page_name");
+
+    @mysql_query("
+      CREATE TABLE IF NOT EXISTS {$g_table_prefix}module_pages_clients (
+        page_id mediumint(9) unsigned NOT NULL,
+        client_id mediumint(9) unsigned NOT NULL,
+        PRIMARY KEY (page_id, client_id)
+      ) DEFAULT CHARSET=utf8
+        ");
+  }
+
+  if ($old_version_info["release_date"] < 20100911)
+  {
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages TYPE=MyISAM");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages ENGINE=MyISAM");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages_clients TYPE=MyISAM");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages_clients ENGINE=MyISAM");
+  }
+}
+*/
+
 function pages__upgrade($old_version, $new_version)
 {
   global $g_table_prefix;
