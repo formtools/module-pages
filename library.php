@@ -43,18 +43,34 @@ function pg_update_settings($info)
 function pg_add_page($info)
 {
 	global $g_table_prefix, $LANG;
-
+	
 	$info = ft_sanitize($info);
-
-  $page_name = $info["page_name"];
+	$page_name = $info["page_name"];
   $heading   = $info["heading"];
-  $content   = $info["page_html"];
+	$access_type = $info["access_type"];
+	$content_type = $info["content_type"];
+	$use_wysiwyg = $info["use_wysiwyg_hidden"];
 
-  mysql_query("
-    INSERT INTO {$g_table_prefix}module_pages (page_name, heading, content)
-    VALUES ('$page_name', '$heading', '$content')
-      ");
-  $page_id = mysql_insert_id();
+  $content = $info["codemirror_content"];
+	if ($content_type == "html" && $use_wysiwyg == "yes")
+    $content = $info["wysiwyg_content"];
+
+	$query = mysql_query("
+	  INSERT INTO {$g_table_prefix}module_pages (page_name, content_type, access_type, use_wysiwyg, heading, content)
+		VALUES ('$page_name', '$content_type', '$access_type', '$use_wysiwyg', '$heading', '$content')
+		  ");
+
+  if ($query)
+	{
+    $page_id = mysql_insert_id();
+    if ($access_type == "private")
+  	{
+  	  foreach ($info["selected_client_ids"] as $client_id)
+  	  {
+  		  mysql_query("INSERT INTO {$g_table_prefix}module_pages_clients (page_id, client_id) VALUES ($page_id, $client_id)");
+  		}
+  	}		
+	}
 
   if ($page_id != 0)
   {
@@ -66,8 +82,8 @@ function pg_add_page($info)
   	$success = false;
   	$message = $LANG["notify_page_not_added"];
   }
-
-  return array($success, $message);
+	
+  return array($success, $message, $page_id);
 }
 
 
@@ -99,7 +115,16 @@ function pg_get_page($page_id)
 	global $g_table_prefix;
 
 	$query = mysql_query("SELECT * FROM {$g_table_prefix}module_pages WHERE page_id = $page_id");
-	return mysql_fetch_assoc($query);
+	$page_info = mysql_fetch_assoc($query);
+	
+	$clients_query = mysql_query("SELECT * FROM {$g_table_prefix}module_pages_clients WHERE page_id = $page_id");
+  $page_info["clients"] = array();
+  while ($row = mysql_fetch_assoc($clients_query))
+	{
+	  $page_info["clients"][] = $row["client_id"];
+  }
+
+	return $page_info;
 }
 
 
@@ -164,15 +189,33 @@ function pg_update_page($page_id, $info)
 	$info = ft_sanitize($info);
 	$page_name = $info["page_name"];
   $heading   = $info["heading"];
-  $content   = $info["page_html"];
+	$access_type = $info["access_type"];
+	$content_type = $info["content_type"];
+	$use_wysiwyg = $info["use_wysiwyg_hidden"];
+
+  $content = $info["codemirror_content"];
+	if ($content_type == "html" && $use_wysiwyg == "yes")
+    $content = $info["wysiwyg_content"];
 
 	mysql_query("
 	  UPDATE {$g_table_prefix}module_pages
 	  SET    page_name = '$page_name',
-	         heading = '$heading',
+					 content_type = '$content_type', 
+					 access_type = '$access_type',
+					 use_wysiwyg = '$use_wysiwyg',
+					 heading = '$heading',
 	         content = '$content'
 	  WHERE  page_id = $page_id
 	    ");
+
+  @mysql_query("DELETE FROM {$g_table_prefix}module_pages_clients WHERE page_id = $page_id");
+  if ($access_type == "private")
+	{
+	  foreach ($info["selected_client_ids"] as $client_id)
+	  {
+		  mysql_query("INSERT INTO {$g_table_prefix}module_pages_clients (page_id, client_id) VALUES ($page_id, $client_id)");
+		}
+	}
 
 	return array(true, $LANG["notify_page_updated"]);
 }
@@ -184,19 +227,30 @@ function pg_update_page($page_id, $info)
  */
 function pages__install($module_id)
 {
-	global $g_table_prefix, $LANG;
+  global $g_table_prefix, $LANG;
+  
+  // our create table query
+  $queries = array();
+  $queries[] = "
+    CREATE TABLE {$g_table_prefix}module_pages (
+      page_id mediumint(8) unsigned NOT NULL auto_increment,
+      page_name varchar(50) NOT NULL,
+      access_type enum('admin','public','private') NOT NULL default 'admin',
+      content_type enum('html','php','smarty') NOT NULL default 'html',
+      use_wysiwyg enum('yes','no') NOT NULL default 'yes',
+      heading varchar(255) default NULL,
+      content text,
+      PRIMARY KEY (page_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+      "; 
 
-	// our create table query
-	$queries = array();
-	$queries[] = "
-		CREATE TABLE {$g_table_prefix}module_pages (
-	    page_id mediumint(8) unsigned NOT NULL auto_increment,
-	    page_name varchar(50) NOT NULL,
-	    heading varchar(255) default NULL,
-	    content text,
-	    PRIMARY KEY  (page_id)
-	   ) ENGINE=InnoDB
-  ";
+  $queries[] = "
+    CREATE TABLE IF NOT EXISTS {$g_table_prefix}module_pages_clients (
+      page_id mediumint(9) unsigned NOT NULL,
+      client_id mediumint(9) unsigned NOT NULL,
+      PRIMARY KEY (page_id, client_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+      ";
 
   $queries[] = "INSERT INTO {$g_table_prefix}settings (setting_name, setting_value, module) VALUES ('num_pages_per_page', '10', 'pages')";
 
@@ -213,7 +267,7 @@ function pages__install($module_id)
 
   // if there was a problem, remove all the table and return an error
   $success = true;
-	$message = "";
+  $message = "";
   if ($has_problem)
 	{
 		$success = false;
@@ -223,6 +277,31 @@ function pages__install($module_id)
 	}
 
 	return array($success, $message);
+}
+
+
+function pages__upgrade($old_version, $new_version)
+{
+  global $g_table_prefix;
+
+  $old_version_info = ft_get_version_info($old_version);
+  $new_version_info = ft_get_version_info($new_version);
+
+  if ($old_version_info["release_date"] < 20091020)
+  {
+		// update the pages table
+		@mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD content_type ENUM('html','php','smarty') NOT NULL DEFAULT 'html' AFTER page_name");
+		@mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD use_wysiwyg ENUM('yes','no') NOT NULL DEFAULT 'yes' AFTER content_type");
+		@mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD access_type ENUM('admin','public','private') NOT NULL DEFAULT 'admin' AFTER page_name");		
+		
+    @mysql_query("
+      CREATE TABLE IF NOT EXISTS {$g_table_prefix}module_pages_clients (
+        page_id mediumint(9) unsigned NOT NULL,
+        client_id mediumint(9) unsigned NOT NULL,
+        PRIMARY KEY (page_id, client_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+        ");
+  }
 }
 
 
@@ -250,8 +329,9 @@ function pages__uninstall($module_id)
 	  mysql_query("DELETE FROM {$g_table_prefix}menu_items WHERE page_identifier = 'page_{$page_id}");
 	}
 
-	// delete the Pages module table
-	$result = mysql_query("DROP TABLE {$g_table_prefix}module_pages");
+	// delete the Pages module tables
+  @mysql_query("DROP TABLE {$g_table_prefix}module_pages");
+  @mysql_query("DROP TABLE {$g_table_prefix}module_pages_clients");
 
 	// update sessions in case a Page was in the administrator's account menu
 	ft_cache_account_menu($account_id = $_SESSION["ft"]["account"]["account_id"]);

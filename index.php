@@ -6,11 +6,7 @@ ft_init_module_page();
 $folder = dirname(__FILE__);
 require_once("$folder/library.php");
 
-if (isset($_POST["add_page"]))
-	list($g_success, $g_message) = pg_add_page($_POST);
-else if (isset($_POST["update_page"]))
-	list($g_success, $g_message) = pg_update_page($_POST["page_id"], $_POST);
-else if (isset($_GET["delete"]))
+if (isset($_GET["delete"]))
   list($g_success, $g_message) = pg_delete_page($_GET["delete"]);
 
 
@@ -30,14 +26,15 @@ $page_vars["pages"] = $results;
 $page_vars["head_title"] = $L["module_name"];
 $page_vars["pagination"] = ft_get_page_nav($num_results, $num_pages_per_page, $page, "");
 $page_vars["text_intro_para_2"] = $text_intro_para_2;
-$page_vars["head_js"] = "var page_ns = {};
+$page_vars["head_js"] =<<< EOF
+var page_ns = {};
 page_ns.delete_page = function(page_id)
 {
-  if (confirm(\"{$L["confirm_delete_page"]}\"))
+  if (confirm("{$L["confirm_delete_page"]}"))
     window.location = 'index.php?delete=' + page_id;
 
   return false;
 }
-";
+EOF;
 
 ft_display_module_page("templates/index.tpl", $page_vars);

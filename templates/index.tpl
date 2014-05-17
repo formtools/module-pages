@@ -11,56 +11,75 @@
 
   <div class="margin_bottom_large">
     {$L.text_intro_para_1}
-  </div>
-
-  <div class="margin_bottom_large">
     {$text_intro_para_2}
   </div>
 
   {if $pages|@count == 0}
 
-		<div class="notify yellow_bg" class="margin_bottom_large">
-			<div style="padding:8px">
-				{$L.notify_no_pages}
-		  </div>
-	  </div>
+    <div class="notify yellow_bg" class="margin_bottom_large">
+      <div style="padding:8px">
+        {$L.notify_no_pages}
+      </div>
+    </div>
 
-	{else}
+  {else}
 
-		{$pagination}
+    {$pagination}
 
-	  <table class="list_table" style="width:460px" cellpadding="1" cellspacing="1">
-	  <tr style="height: 20px;">
-	    <th width="20">{$LANG.word_id|upper}</th>
-	    <th>{$L.word_page}</th>
-	    <th width="60">{$LANG.word_view|upper}</th>
-	    <th width="60">{$LANG.word_edit|upper}</th>
-	    <th width="60" class="del">{$LANG.word_delete|upper}</th>
-	  </tr>
+    <table class="list_table" style="width:100%" cellpadding="1" cellspacing="1">
+    <tr style="height: 20px;">
+      <th width="20">{$LANG.word_id|upper}</th>
+      <th>{$L.word_page}</th>
+      <th width="100">Page Type</th>
+      <th width="120">Who can Access?</th>
+      <th width="60">{$LANG.word_view|upper}</th>
+      <th width="60">{$LANG.word_edit|upper}</th>
+      <th width="60" class="del">{$LANG.word_delete|upper}</th>
+    </tr>
 
     {foreach from=$pages item=page name=row}
       {assign var='index' value=$smarty.foreach.row.index}
       {assign var='count' value=$smarty.foreach.row.iteration}
       {assign var='page_id' value=$page.page_id}
 
- 	    <tr>
- 	      <td align="center" class="light_grey">{$page_id}</td>
- 	    	<td class="pad_left_small">{$page.page_name}</td>
-				<td align="center"><a href="view.php?page_id={$page_id}">{$LANG.word_view|upper}</a></td>
-				<td align="center"><a href="edit.php?page_id={$page_id}">{$LANG.word_edit|upper}</a></td>
-				<td class="del"><a href="#" onclick="return page_ns.delete_page({$page_id})">{$LANG.word_delete|upper}</a></td>
-	    </tr>
+      <tr>
+        <td align="center" class="light_grey">{$page_id}</td>
+        <td class="pad_left_small">{$page.page_name}</td>
+        <td class="pad_left">
+      	  {if $page.content_type == "html"}
+      	    <span class="">{$LANG.word_html}</span>
+      	  {elseif $page.content_type == "php"}
+      	    <span class="">{$L.word_php}</span>
+      	  {elseif $page.content_type == "smarty"}
+      	    <span class="">{$L.word_smarty}</span>
+      	  {/if}
+      	</td>
+        <td class="pad_left"> 
+				  {$page_info.access_type}
+
+          {if $page.access_type == 'admin'}
+            <span class="blue">{$LANG.phrase_admin_only}</span>
+          {elseif $page.access_type == 'public'}
+            <span class="green">{$LANG.word_public}</span>
+          {elseif $page.access_type == 'private'}
+            <span class="purple">{$LANG.word_private}</span>
+          {/if}
+				</td>
+        <td align="center"><a href="view.php?page_id={$page_id}">{$LANG.word_view|upper}</a></td>
+        <td align="center"><a href="edit.php?page_id={$page_id}">{$LANG.word_edit|upper}</a></td>
+        <td class="del"><a href="#" onclick="return page_ns.delete_page({$page_id})">{$LANG.word_delete|upper}</a></td>
+      </tr>
 
     {/foreach}
 
-	  </table>
+    </table>
 
   {/if}
 
   <form action="add.php" method="post">
-		<p>
-		  <input type="submit" value="{$L.phrase_add_page|upper}" />
-		</p>
+    <p>
+      <input type="submit" value="{$L.phrase_add_page|upper}" />
+    </p>
   </form>
 
 {include file='modules_footer.tpl'}

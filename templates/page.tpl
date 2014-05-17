@@ -2,6 +2,6 @@
 
 	<div class="title margin_bottom_large">{$page_info.heading|upper}</div>
 
-	{$page_info.content}
+	{$content}
 
 {include file="footer.tpl"}
