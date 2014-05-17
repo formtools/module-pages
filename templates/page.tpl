@@ -1,7 +1,7 @@
 {include file="header.tpl"}
 
-	<div class="title margin_bottom_large">{$page_info.heading|upper}</div>
+  <div class="title margin_bottom_large">{$page_info.heading}</div>
 
-	{$content}
+  {$content}
 
 {include file="footer.tpl"}
