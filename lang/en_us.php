@@ -36,6 +36,7 @@ $L["phrase_page_name"] = "Page Name";
 $L["phrase_add_new_page"] = "add a new page";
 $L["phrase_change_your_settings"] = "change your settings";
 $L["phrase_display_custom_pages"] = "display all of your custom pages";
+$L["phrase_view_page"] = "View Page";
 
 $L["confirm_delete_page"] = "Are you sure you want to delete this page?";
 

@@ -1,5 +1,7 @@
 {include file='modules_header.tpl'}
 
+  <a href="{$g_root_url}/modules/pages/view.php?page_id={$page_id}" style="float:right" title="{$L.phrase_view_page}"><img src="{$theme_url}/images/admin_view.png" border="0" /></a>
+
   <table cellpadding="0" cellspacing="0">
   <tr>
     <td width="45"><a href="./"><img src="images/icon_pages.gif" border="0" width="34" height="34" /></a></td>

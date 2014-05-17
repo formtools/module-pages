@@ -27,6 +27,8 @@ eval($page_info["content"]);
 // ------------------------------------------------------------------------------------------------
 
 $page_vars = array();
+$page_vars["page_id"] = $page_id;
+$page_vars["phrase_edit_page"] = $L["phrase_edit_page"];
 $page_vars["head_title"] = "{$LANG["pages"]["word_page"]} - {$page_info["heading"]}";
 $page_vars["page_info"] = $page_info;
 $page_vars["content"] = $content;

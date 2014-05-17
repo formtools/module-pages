@@ -11,7 +11,7 @@ $page_id = $request["id"];
 $page_info = pg_get_page($page_id);
 
 // check permissions! The above code handles booting a user out if they're not logged in,
-// so the only case we're worried about 
+// so the only case we're worried about
 $account_type = isset($_SESSION["ft"]["account"]["account_type"]) ? $_SESSION["ft"]["account"]["account_type"] : "";
 $account_id   = isset($_SESSION["ft"]["account"]["account_id"]) ? $_SESSION["ft"]["account"]["account_id"] : "";
 
@@ -40,11 +40,15 @@ eval($page_info["content"]);
 
 // ------------------------------------------------------------------------------------------------
 
+
 $page_vars = array();
-$page_vars["page"]      = "custom_page";
-$page_vars["page_url"]  = ft_get_page_url("custom_page");
-$page_vars["head_title"] = "{$LANG["pages"]["word_page"]} - {$page_info["heading"]}";
-$page_vars["page_info"] = $page_info;
-$page_vars["content"] = $content;
+$page_vars["page"]         = "custom_page";
+$page_vars["page_id"]      = $page_id;
+$page_vars["phrase_edit_page"] = $LANG["pages"]["phrase_edit_page"];
+$page_vars["account_type"] = $account_type;
+$page_vars["page_url"]     = ft_get_page_url("custom_page");
+$page_vars["head_title"]   = "{$LANG["pages"]["word_page"]} - {$page_info["heading"]}";
+$page_vars["page_info"]    = $page_info;
+$page_vars["content"]      = $content;
 
 ft_display_page("../../modules/pages/templates/page.tpl", $page_vars);
