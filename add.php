@@ -3,39 +3,36 @@
 require("../../global/library.php");
 ft_init_module_page();
 
+// if the user has the tinyMCE field module installed, offer the option of editing the pages with it
+$tinymce_available = ft_check_module_available("field_type_tinymce");
+
 $page_vars = array();
 $page_vars["head_title"] = $L["phrase_add_page"];
+$page_vars["tinymce_available"] = $tinymce_available;
 $page_vars["head_string"] =<<< EOF
-  <script type="text/javascript" src="$g_root_url/global/tiny_mce/tiny_mce.js"></script>
-  <script type="text/javascript" src="$g_root_url/global/scripts/wysiwyg_settings.js"></script>
   <script type="text/javascript" src="$g_root_url/global/codemirror/js/codemirror.js"></script>
   <script type="text/javascript" src="scripts/pages.js"></script>
 EOF;
 
-$page_vars["head_js"] =<<< EOF
-// load up any WYWISYG editors in the page
-editors["advanced"].elements = "wysiwyg_content";
-editors["advanced"].theme_advanced_toolbar_location = "top";
-editors["advanced"].theme_advanced_toolbar_align = "left";
-editors["advanced"].theme_advanced_path_location = "bottom";
-editors["advanced"].theme_advanced_resizing = true;
-editors["advanced"].content_css = "$g_root_url/global/css/tinymce.css";
-tinyMCE.init(editors["advanced"]);
+if ($tinymce_available)
+{
+  $page_vars["head_string"] .= "<script src=\"$g_root_url/modules/field_type_tinymce/tinymce/jquery.tinymce.js\"></script>";
+}
 
-if (typeof pages_ns == undefined)
+$page_vars["head_js"] =<<< EOF
+if (typeof pages_ns == undefined) {
   var pages_ns = {};
+}
 
 pages_ns.current_editor = "tinymce";
 
 var rules = [];
-
-rsv.onCompleteHandler = function()
-{
-  $("use_wysiwyg_hidden").value = ($("uwe").checked) ? "yes" : "no";
-  ft.select_all(document.pages_form["selected_client_ids[]"]);
- 
-	return true;
+rsv.onCompleteHandler = function() {
+  $("#use_wysiwyg_hidden").val($("#uwe").attr("checked") ? "yes" : "no");
+  ft.select_all("selected_client_ids[]");
+  return true;
 }
+
 EOF;
 
 ft_display_module_page("templates/add.tpl", $page_vars);

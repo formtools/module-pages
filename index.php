@@ -25,16 +25,11 @@ $page_vars = array();
 $page_vars["pages"] = $results;
 $page_vars["head_title"] = $L["module_name"];
 $page_vars["pagination"] = ft_get_page_nav($num_results, $num_pages_per_page, $page, "");
+$page_vars["js_messages"] = array("word_edit", "phrase_please_confirm", "word_yes", "word_no");
+$page_vars["module_js_messages"] = array("confirm_delete_page");
 $page_vars["text_intro_para_2"] = $text_intro_para_2;
-$page_vars["head_js"] =<<< EOF
-var page_ns = {};
-page_ns.delete_page = function(page_id)
-{
-  if (confirm("{$L["confirm_delete_page"]}"))
-    window.location = 'index.php?delete=' + page_id;
-
-  return false;
-}
+$page_vars["head_string"] =<<< EOF
+  <script type="text/javascript" src="scripts/pages.js"></script>
 EOF;
 
 ft_display_module_page("templates/index.tpl", $page_vars);

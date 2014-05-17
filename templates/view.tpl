@@ -1,6 +1,6 @@
 {include file='modules_header.tpl'}
 
-	<div class="title margin_bottom_large">{$page_info.heading|upper}</div>
+  <div class="title margin_bottom_large">{$page_info.heading}</div>
 
   {$content}
 

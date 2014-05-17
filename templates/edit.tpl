@@ -2,8 +2,14 @@
 
   <table cellpadding="0" cellspacing="0">
   <tr>
-    <td width="45"><a href="index.php"><img src="images/icon_pages.gif" border="0" width="34" height="34" /></a></td>
-    <td class="title"><a href="index.php">{$L.module_name|upper}</a> &raquo; {$L.phrase_edit_page|upper}</td>
+    <td width="45"><a href="./"><img src="images/icon_pages.gif" border="0" width="34" height="34" /></a></td>
+    <td class="title">
+      <a href="../../admin/modules">{$LANG.word_modules}</a>
+      <span class="joiner">&raquo;</span>
+      <a href="./">{$L.module_name}</a>
+      <span class="joiner">&raquo;</span>
+      {$L.phrase_edit_page}
+    </td>
   </tr>
   </table>
 
@@ -42,17 +48,18 @@
     <tr>
       <td valign="top">{$L.phrase_page_content}</td>
       <td>
-			
+
       	<div id="wysiwyg_div" {if $page_info.content_type != "html" || $page_info.use_wysiwyg == "no"}style="display:none"{/if}>
       	  <textarea name="wysiwyg_content" id="wysiwyg_content" style="width:100%; height:300px">{$page_info.content}</textarea>
       	</div>
- 
+
+        <!-- CodeMirror is used for everything except the WYSIWYG editor -->
       	<div id="codemirror_div" {if $page_info.content_type == "html" && !($page_info.content_type == "html" && $page_info.use_wysiwyg == "no")}style="display:none"{/if}>
       	  <div style="border: 1px solid #666666; padding: 3px">
       	    <textarea name="codemirror_content" id="codemirror_content" style="width:100%; height:300px">{$page_info.content}</textarea>
       	  </div>
-      	  
-      	  <script type="text/javascript">
+
+      	  <script>
       	  var html_editor = new CodeMirror.fromTextArea("codemirror_content", {literal}{{/literal}
           parserfile: ["parsejavascript.js", "tokenizejavascript.js"],
       	  path: "{$g_root_url}/global/codemirror/js/",
@@ -61,7 +68,7 @@
       	  </script>
       	</div>
 
-      	<input type="checkbox" id="uwe" name="use_wysiwyg" 
+      	<input type="checkbox" id="uwe" name="use_wysiwyg"
       	  {if $page_info.use_wysiwyg == "yes"}checked{/if}
       	  {if $page_info.content_type != "html"}disabled{/if}
       	  onchange="pages_ns.toggle_wysiwyg_field(this.checked)" />
@@ -99,7 +106,7 @@
       	</table>
 
       	<div id="custom_clients" {if $page_info.access_type != 'private'}style="display:none"{/if} class="margin_top">
-      
+
       	  <table cellpadding="0" cellspacing="0" width="100%" class="list_table">
       	  <tr>
       	    <td class="medium_grey">{$LANG.phrase_available_clients}</td>
@@ -123,9 +130,9 @@
       	    </td>
       	  </tr>
       	  </table>
-      
+
       	</div>
-      
+
       	<div class="light_grey">
       	  Note that pages still need to be assigned to a client via their menu or a hardcoded link in order to be seen. This
       	  setting is for security purposes only.

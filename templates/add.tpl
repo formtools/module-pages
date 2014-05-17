@@ -2,8 +2,14 @@
 
   <table cellpadding="0" cellspacing="0">
   <tr>
-    <td width="45"><a href="index.php"><img src="images/icon_pages.gif" border="0" width="34" height="34" /></a></td>
-    <td class="title">{$L.phrase_add_page|upper}</td>
+    <td width="45"><a href="./"><img src="images/icon_pages.gif" border="0" width="34" height="34" /></a></td>
+    <td class="title">
+      <a href="../../admin/modules">{$LANG.word_modules}</a>
+      <span class="joiner">&raquo;</span>
+      <a href="./">{$L.module_name}</a>
+      <span class="joiner">&raquo;</span>
+      {$L.phrase_add_page}
+    </td>
   </tr>
   </table>
 
@@ -41,7 +47,7 @@
       	<div id="wysiwyg_div">
       	  <textarea name="wysiwyg_content" id="wysiwyg_content" style="width:100%; height:300px"></textarea>
       	</div>
- 
+
       	<div id="codemirror_div" style="display:none">
       	  <div style="border: 1px solid #666666; padding: 3px">
       	    <textarea name="codemirror_content" id="codemirror_content" style="width:100%; height:300px"></textarea>
@@ -56,9 +62,11 @@
       	  </script>
       	</div>
 
-      	<input type="checkbox" id="uwe" name="use_wysiwyg" checked onchange="pages_ns.toggle_wysiwyg_field(this.checked)" />
-      	  <label for="uwe">Use WYSIWYG editor</label>
-      	<br />
+        {if $tinymce_available}
+      	  <input type="checkbox" id="uwe" name="use_wysiwyg" checked onchange="pages_ns.toggle_wysiwyg_field(this.checked)" />
+      	    <label for="uwe">Use WYSIWYG editor</label>
+      	  <br />
+      	{/if}
       	<br />
       </td>
     </tr>
@@ -87,7 +95,6 @@
       	</table>
 
       	<div id="custom_clients" class="margin_top" style="display:none">
-      
       	  <table cellpadding="0" cellspacing="0" width="100%" class="list_table">
       	  <tr>
       	    <td class="medium_grey">{$LANG.phrase_available_clients}</td>
@@ -97,7 +104,7 @@
       	  <tr>
       	    <td>
       	      {clients_dropdown name_id="available_client_ids[]" multiple="true" multiple_action="hide"
-      		      clients=$page_info.clients size="4" style="width: 220px"}
+      		      clients=$page_info.clients size="4" style="width: 240px"}
       	    </td>
       	    <td align="center" valign="middle" width="100">
       	      <input type="button" value="{$LANG.word_add_uc_rightarrow}"
@@ -107,13 +114,12 @@
       	    </td>
       	    <td>
       	      {clients_dropdown name_id="selected_client_ids[]" multiple="true" multiple_action="show"
-                clients=$page_info.clients size="4" style="width: 220px"}
+                clients=$page_info.clients size="4" style="width: 240px"}
       	    </td>
       	  </tr>
       	  </table>
-
       	</div>
-      
+
       	<div class="light_grey">
       	  Note that pages still need to be assigned to a client via their menu or a hardcoded link in order to be seen. This
       	  setting is for security purposes only.

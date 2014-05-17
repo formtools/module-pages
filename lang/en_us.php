@@ -40,7 +40,7 @@ $L["phrase_display_custom_pages"] = "display all of your custom pages";
 $L["confirm_delete_page"] = "Are you sure you want to delete this page?";
 
 $L["text_page_name_desc"] = "This value is used internally to help you identify the page and as the menu item label.";
-$L["text_intro_para_1"] = "The Pages module lets you to customize the Form Tools user interface by embedding your own pages containing whatever information you or your clients need. This can be helpful if you would like to add a splash page, links page or other such information.";
+$L["text_intro_para_1"] = "The Pages module lets you to customize the Form Tools user interface by adding your own pages containing whatever information you or your clients need. This can be helpful if you would like to add a splash page, links page or other such information.";
 $L["text_intro_para_2"] = "After creating your page(s), go to the <a href=\"{\$url}\">Menus page</a> in the settings section to assign the page to a menu for yourself or your clients.";
 $L["text_help_link"] = "For help on how to use this module, please see the <a href=\"http://modules.formtools.org/pages/\">module help documentation</a>.";
 
