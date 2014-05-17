@@ -98,7 +98,22 @@ function pg_delete_page($page_id)
 {
   global $g_table_prefix, $L;
 
+  if (empty($page_id) || !is_numeric($page_id))
+    return array(false, "");
+
   mysql_query("DELETE FROM {$g_table_prefix}module_pages WHERE page_id = $page_id");
+
+  $query = mysql_query("
+    DELETE FROM {$g_table_prefix}menu_items
+    WHERE page_identifier = 'page_{$page_id}'
+  ");
+
+  // this is dumb, but better than nothing. If we just updated any menus, re-cache the admin menu
+  // just in case
+  if (mysql_affected_rows())
+  {
+    ft_cache_account_menu(1);
+  }
 
   return array(true, $L["notify_delete_page"]);
 }
