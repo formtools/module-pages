@@ -241,7 +241,7 @@ function pages__install($module_id)
       heading varchar(255) default NULL,
       content text,
       PRIMARY KEY (page_id)
-      ) TYPE=MyISAM DEFAULT CHARSET=utf8
+      ) DEFAULT CHARSET=utf8
       ";
 
   $queries[] = "
@@ -249,7 +249,7 @@ function pages__install($module_id)
       page_id mediumint(9) unsigned NOT NULL,
       client_id mediumint(9) unsigned NOT NULL,
       PRIMARY KEY (page_id, client_id)
-    ) TYPE=MyISAM DEFAULT CHARSET=utf8
+    ) DEFAULT CHARSET=utf8
       ";
 
   $queries[] = "INSERT INTO {$g_table_prefix}settings (setting_name, setting_value, module) VALUES ('num_pages_per_page', '10', 'pages')";
@@ -299,14 +299,16 @@ function pages__upgrade($old_version, $new_version)
         page_id mediumint(9) unsigned NOT NULL,
         client_id mediumint(9) unsigned NOT NULL,
         PRIMARY KEY (page_id, client_id)
-      ) TYPE=MyISAM DEFAULT CHARSET=utf8
+      ) DEFAULT CHARSET=utf8
         ");
   }
 
   if ($old_version_info["release_date"] < 20100911)
   {
     @mysql_query("ALTER TABLE {$g_table_prefix}module_pages TYPE=MyISAM");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages ENGINE=MyISAM");
     @mysql_query("ALTER TABLE {$g_table_prefix}module_pages_clients TYPE=MyISAM");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages_clients ENGINE=MyISAM");
   }
 }
 
