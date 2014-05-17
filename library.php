@@ -187,7 +187,8 @@ function pages__install($module_id)
 	global $g_table_prefix, $LANG;
 
 	// our create table query
-	$query = "
+	$queries = array();
+	$queries[] = "
 		CREATE TABLE {$g_table_prefix}module_pages (
 	    page_id mediumint(8) unsigned NOT NULL auto_increment,
 	    page_name varchar(50) NOT NULL,
@@ -197,18 +198,28 @@ function pages__install($module_id)
 	   ) ENGINE=InnoDB
   ";
 
-	$result = mysql_query($query);
+  $queries[] = "INSERT INTO {$g_table_prefix}settings (setting_name, setting_value, module) VALUES ('num_pages_per_page', '10', 'pages')";
 
+	$has_problem = false;
+	foreach ($queries as $query)
+  {
+  	$result = @mysql_query($query);
+	  if (!$result)
+	  {
+	    $has_problem = true;
+	    break;
+	  }
+  }
+
+  // if there was a problem, remove all the table and return an error
+  $success = true;
 	$message = "";
-	if ($result)
-		$success = true;
-	else
+  if ($has_problem)
 	{
 		$success = false;
-
-		// get the error message
+		@mysql_query("DROP TABLE {$g_table_prefix}module_pages");
 		$mysql_error = mysql_error();
-		$message =  ft_eval_smarty_string($LANG["pages"]["notify_problem_installing"], array("error" => $mysql_error));
+		$message     = ft_eval_smarty_string($LANG["pages"]["notify_problem_installing"], array("error" => $mysql_error));
 	}
 
 	return array($success, $message);
@@ -244,6 +255,8 @@ function pages__uninstall($module_id)
 
 	// update sessions in case a Page was in the administrator's account menu
 	ft_cache_account_menu($account_id = $_SESSION["ft"]["account"]["account_id"]);
+
+  mysql_query("DELETE FROM {$g_table_prefix}settings WHERE module = 'pages'");
 
 	return array(true, $LANG["pages"]["notify_module_uninstalled"]);
 }
