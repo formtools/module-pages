@@ -3,7 +3,7 @@
 /**
  * This file defines all functions relating to the Pages module.
  *
- * @copyright Encore Web Studios 2008
+ * @copyright Encore Web Studios 2010
  * @author Encore Web Studios <formtools@encorewebstudios.com>
  * @package 2-0-0
  * @subpackage Pages
@@ -42,47 +42,47 @@ function pg_update_settings($info)
  */
 function pg_add_page($info)
 {
-	global $g_table_prefix, $LANG;
-	
-	$info = ft_sanitize($info);
-	$page_name = $info["page_name"];
+  global $g_table_prefix, $LANG;
+
+  $info = ft_sanitize($info);
+  $page_name = $info["page_name"];
   $heading   = $info["heading"];
-	$access_type = $info["access_type"];
-	$content_type = $info["content_type"];
-	$use_wysiwyg = $info["use_wysiwyg_hidden"];
+  $access_type = $info["access_type"];
+  $content_type = $info["content_type"];
+  $use_wysiwyg = $info["use_wysiwyg_hidden"];
 
   $content = $info["codemirror_content"];
-	if ($content_type == "html" && $use_wysiwyg == "yes")
+  if ($content_type == "html" && $use_wysiwyg == "yes")
     $content = $info["wysiwyg_content"];
 
-	$query = mysql_query("
-	  INSERT INTO {$g_table_prefix}module_pages (page_name, content_type, access_type, use_wysiwyg, heading, content)
-		VALUES ('$page_name', '$content_type', '$access_type', '$use_wysiwyg', '$heading', '$content')
-		  ");
+  $query = mysql_query("
+    INSERT INTO {$g_table_prefix}module_pages (page_name, content_type, access_type, use_wysiwyg, heading, content)
+    VALUES ('$page_name', '$content_type', '$access_type', '$use_wysiwyg', '$heading', '$content')
+      ");
 
   if ($query)
-	{
+  {
     $page_id = mysql_insert_id();
     if ($access_type == "private")
-  	{
-  	  foreach ($info["selected_client_ids"] as $client_id)
-  	  {
-  		  mysql_query("INSERT INTO {$g_table_prefix}module_pages_clients (page_id, client_id) VALUES ($page_id, $client_id)");
-  		}
-  	}		
-	}
+    {
+      foreach ($info["selected_client_ids"] as $client_id)
+      {
+        mysql_query("INSERT INTO {$g_table_prefix}module_pages_clients (page_id, client_id) VALUES ($page_id, $client_id)");
+      }
+    }
+  }
 
   if ($page_id != 0)
   {
-  	$success = true;
-  	$message = $LANG["notify_page_added"];
+    $success = true;
+    $message = $LANG["notify_page_added"];
   }
   else
   {
-  	$success = false;
-  	$message = $LANG["notify_page_not_added"];
+    $success = false;
+    $message = $LANG["notify_page_not_added"];
   }
-	
+
   return array($success, $message, $page_id);
 }
 
@@ -96,11 +96,11 @@ function pg_add_page($info)
  */
 function pg_delete_page($page_id)
 {
-	global $g_table_prefix, $L;
+  global $g_table_prefix, $L;
 
-	mysql_query("DELETE FROM {$g_table_prefix}module_pages WHERE page_id = $page_id");
+  mysql_query("DELETE FROM {$g_table_prefix}module_pages WHERE page_id = $page_id");
 
-	return array(true, $L["notify_delete_page"]);
+  return array(true, $L["notify_delete_page"]);
 }
 
 
@@ -112,19 +112,19 @@ function pg_delete_page($page_id)
  */
 function pg_get_page($page_id)
 {
-	global $g_table_prefix;
+  global $g_table_prefix;
 
-	$query = mysql_query("SELECT * FROM {$g_table_prefix}module_pages WHERE page_id = $page_id");
-	$page_info = mysql_fetch_assoc($query);
-	
-	$clients_query = mysql_query("SELECT * FROM {$g_table_prefix}module_pages_clients WHERE page_id = $page_id");
+  $query = mysql_query("SELECT * FROM {$g_table_prefix}module_pages WHERE page_id = $page_id");
+  $page_info = mysql_fetch_assoc($query);
+
+  $clients_query = mysql_query("SELECT * FROM {$g_table_prefix}module_pages_clients WHERE page_id = $page_id");
   $page_info["clients"] = array();
   while ($row = mysql_fetch_assoc($clients_query))
-	{
-	  $page_info["clients"][] = $row["client_id"];
+  {
+    $page_info["clients"][] = $row["client_id"];
   }
 
-	return $page_info;
+  return $page_info;
 }
 
 
@@ -137,36 +137,36 @@ function pg_get_page($page_id)
  */
 function pg_get_pages($num_per_page, $page_num = 1)
 {
-	global $g_table_prefix;
+  global $g_table_prefix;
 
-	if ($num_per_page == "all")
-	{
-		$query = mysql_query("
-		  SELECT *
-	    FROM   {$g_table_prefix}module_pages
-	    ORDER BY heading
-	      ");
-	}
-	else
-	{
-	  // determine the offset
-	  if (empty($page_num)) { $page_num = 1; }
-		$first_item = ($page_num - 1) * $num_per_page;
+  if ($num_per_page == "all")
+  {
+    $query = mysql_query("
+      SELECT *
+      FROM   {$g_table_prefix}module_pages
+      ORDER BY heading
+        ");
+  }
+  else
+  {
+    // determine the offset
+    if (empty($page_num)) { $page_num = 1; }
+    $first_item = ($page_num - 1) * $num_per_page;
 
-	  $query = mysql_query("
-	    SELECT *
-	    FROM   {$g_table_prefix}module_pages
-	    ORDER BY heading
-	    LIMIT $first_item, $num_per_page
-		    ") or handle_error(mysql_error());
-	}
+    $query = mysql_query("
+      SELECT *
+      FROM   {$g_table_prefix}module_pages
+      ORDER BY heading
+      LIMIT $first_item, $num_per_page
+        ") or handle_error(mysql_error());
+  }
 
-	$count_query = mysql_query("SELECT count(*) as c FROM {$g_table_prefix}module_pages");
-	$count_hash = mysql_fetch_assoc($count_query);
+  $count_query = mysql_query("SELECT count(*) as c FROM {$g_table_prefix}module_pages");
+  $count_hash = mysql_fetch_assoc($count_query);
   $num_results = $count_hash["c"];
 
   $infohash = array();
-	while ($field = mysql_fetch_assoc($query))
+  while ($field = mysql_fetch_assoc($query))
     $infohash[] = $field;
 
   $return_hash["results"] = $infohash;
@@ -184,40 +184,40 @@ function pg_get_pages($num_per_page, $page_num = 1)
  */
 function pg_update_page($page_id, $info)
 {
-	global $g_table_prefix, $LANG;
+  global $g_table_prefix, $LANG;
 
-	$info = ft_sanitize($info);
-	$page_name = $info["page_name"];
+  $info = ft_sanitize($info);
+  $page_name = $info["page_name"];
   $heading   = $info["heading"];
-	$access_type = $info["access_type"];
-	$content_type = $info["content_type"];
-	$use_wysiwyg = $info["use_wysiwyg_hidden"];
+  $access_type = $info["access_type"];
+  $content_type = $info["content_type"];
+  $use_wysiwyg = $info["use_wysiwyg_hidden"];
 
   $content = $info["codemirror_content"];
-	if ($content_type == "html" && $use_wysiwyg == "yes")
+  if ($content_type == "html" && $use_wysiwyg == "yes")
     $content = $info["wysiwyg_content"];
 
-	mysql_query("
-	  UPDATE {$g_table_prefix}module_pages
-	  SET    page_name = '$page_name',
-					 content_type = '$content_type', 
-					 access_type = '$access_type',
-					 use_wysiwyg = '$use_wysiwyg',
-					 heading = '$heading',
-	         content = '$content'
-	  WHERE  page_id = $page_id
-	    ");
+  mysql_query("
+    UPDATE {$g_table_prefix}module_pages
+    SET    page_name = '$page_name',
+           content_type = '$content_type',
+           access_type = '$access_type',
+           use_wysiwyg = '$use_wysiwyg',
+           heading = '$heading',
+           content = '$content'
+    WHERE  page_id = $page_id
+      ");
 
   @mysql_query("DELETE FROM {$g_table_prefix}module_pages_clients WHERE page_id = $page_id");
   if ($access_type == "private")
-	{
-	  foreach ($info["selected_client_ids"] as $client_id)
-	  {
-		  mysql_query("INSERT INTO {$g_table_prefix}module_pages_clients (page_id, client_id) VALUES ($page_id, $client_id)");
-		}
-	}
+  {
+    foreach ($info["selected_client_ids"] as $client_id)
+    {
+      mysql_query("INSERT INTO {$g_table_prefix}module_pages_clients (page_id, client_id) VALUES ($page_id, $client_id)");
+    }
+  }
 
-	return array(true, $LANG["notify_page_updated"]);
+  return array(true, $LANG["notify_page_updated"]);
 }
 
 
@@ -228,7 +228,7 @@ function pg_update_page($page_id, $info)
 function pages__install($module_id)
 {
   global $g_table_prefix, $LANG;
-  
+
   // our create table query
   $queries = array();
   $queries[] = "
@@ -241,42 +241,42 @@ function pages__install($module_id)
       heading varchar(255) default NULL,
       content text,
       PRIMARY KEY (page_id)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8
-      "; 
+      ) TYPE=MyISAM DEFAULT CHARSET=utf8
+      ";
 
   $queries[] = "
     CREATE TABLE IF NOT EXISTS {$g_table_prefix}module_pages_clients (
       page_id mediumint(9) unsigned NOT NULL,
       client_id mediumint(9) unsigned NOT NULL,
       PRIMARY KEY (page_id, client_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+    ) TYPE=MyISAM DEFAULT CHARSET=utf8
       ";
 
   $queries[] = "INSERT INTO {$g_table_prefix}settings (setting_name, setting_value, module) VALUES ('num_pages_per_page', '10', 'pages')";
 
-	$has_problem = false;
-	foreach ($queries as $query)
+  $has_problem = false;
+  foreach ($queries as $query)
   {
-  	$result = @mysql_query($query);
-	  if (!$result)
-	  {
-	    $has_problem = true;
-	    break;
-	  }
+    $result = @mysql_query($query);
+    if (!$result)
+    {
+      $has_problem = true;
+      break;
+    }
   }
 
   // if there was a problem, remove all the table and return an error
   $success = true;
   $message = "";
   if ($has_problem)
-	{
-		$success = false;
-		@mysql_query("DROP TABLE {$g_table_prefix}module_pages");
-		$mysql_error = mysql_error();
-		$message     = ft_eval_smarty_string($LANG["pages"]["notify_problem_installing"], array("error" => $mysql_error));
-	}
+  {
+    $success = false;
+    @mysql_query("DROP TABLE {$g_table_prefix}module_pages");
+    $mysql_error = mysql_error();
+    $message     = ft_eval_smarty_string($LANG["pages"]["notify_problem_installing"], array("error" => $mysql_error));
+  }
 
-	return array($success, $message);
+  return array($success, $message);
 }
 
 
@@ -289,17 +289,17 @@ function pages__upgrade($old_version, $new_version)
 
   if ($old_version_info["release_date"] < 20091020)
   {
-		// update the pages table
-		@mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD content_type ENUM('html','php','smarty') NOT NULL DEFAULT 'html' AFTER page_name");
-		@mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD use_wysiwyg ENUM('yes','no') NOT NULL DEFAULT 'yes' AFTER content_type");
-		@mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD access_type ENUM('admin','public','private') NOT NULL DEFAULT 'admin' AFTER page_name");		
-		
+    // update the pages table
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD content_type ENUM('html','php','smarty') NOT NULL DEFAULT 'html' AFTER page_name");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD use_wysiwyg ENUM('yes','no') NOT NULL DEFAULT 'yes' AFTER content_type");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages ADD access_type ENUM('admin','public','private') NOT NULL DEFAULT 'admin' AFTER page_name");
+
     @mysql_query("
       CREATE TABLE IF NOT EXISTS {$g_table_prefix}module_pages_clients (
         page_id mediumint(9) unsigned NOT NULL,
         client_id mediumint(9) unsigned NOT NULL,
         PRIMARY KEY (page_id, client_id)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+      ) TYPE=MyISAM DEFAULT CHARSET=utf8
         ");
   }
 }
@@ -320,23 +320,37 @@ function pages__upgrade($old_version, $new_version)
  */
 function pages__uninstall($module_id)
 {
-	global $g_table_prefix, $LANG;
+  global $g_table_prefix, $LANG;
 
-	$pages = mysql_query("SELECT page_id FROM {$g_table_prefix}module_pages");
-	while ($row = mysql_fetch_assoc($pages))
-	{
-	  $page_id = $row["page_id"];
-	  mysql_query("DELETE FROM {$g_table_prefix}menu_items WHERE page_identifier = 'page_{$page_id}");
-	}
+  $pages = mysql_query("SELECT page_id FROM {$g_table_prefix}module_pages");
+  while ($row = mysql_fetch_assoc($pages))
+  {
+    $page_id = $row["page_id"];
+    mysql_query("DELETE FROM {$g_table_prefix}menu_items WHERE page_identifier = 'page_{$page_id}");
+  }
 
-	// delete the Pages module tables
+  // delete the Pages module tables
   @mysql_query("DROP TABLE {$g_table_prefix}module_pages");
   @mysql_query("DROP TABLE {$g_table_prefix}module_pages_clients");
 
-	// update sessions in case a Page was in the administrator's account menu
-	ft_cache_account_menu($account_id = $_SESSION["ft"]["account"]["account_id"]);
+  // update sessions in case a Page was in the administrator's account menu
+  ft_cache_account_menu($account_id = $_SESSION["ft"]["account"]["account_id"]);
 
   mysql_query("DELETE FROM {$g_table_prefix}settings WHERE module = 'pages'");
 
-	return array(true, $LANG["pages"]["notify_module_uninstalled"]);
+  return array(true, $LANG["pages"]["notify_module_uninstalled"]);
+}
+
+
+function pages__upgrade($old_version, $new_version)
+{
+  global $g_table_prefix;
+
+  $old_version_info = ft_get_version_info($old_version);
+
+  if ($old_version_info["release_date"] < 20100911)
+  {
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages TYPE=MyISAM");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages_clients TYPE=MyISAM");
+  }
 }
