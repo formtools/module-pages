@@ -302,6 +302,12 @@ function pages__upgrade($old_version, $new_version)
       ) TYPE=MyISAM DEFAULT CHARSET=utf8
         ");
   }
+
+  if ($old_version_info["release_date"] < 20100911)
+  {
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages TYPE=MyISAM");
+    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages_clients TYPE=MyISAM");
+  }
 }
 
 
@@ -341,16 +347,3 @@ function pages__uninstall($module_id)
   return array(true, $LANG["pages"]["notify_module_uninstalled"]);
 }
 
-
-function pages__upgrade($old_version, $new_version)
-{
-  global $g_table_prefix;
-
-  $old_version_info = ft_get_version_info($old_version);
-
-  if ($old_version_info["release_date"] < 20100911)
-  {
-    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages TYPE=MyISAM");
-    @mysql_query("ALTER TABLE {$g_table_prefix}module_pages_clients TYPE=MyISAM");
-  }
-}
