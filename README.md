@@ -1,6 +1,8 @@
 ## module-pages
 
-The Pages module lets you create custom pages to embed within the Form Tools UI, containing whatever information you want. A common usage for this module is to provide some sort of custom "Splash" screen for client accounts when they log in, which contains simple help information.
+The Pages module lets you create custom pages to embed within the Form Tools UI containing whatever information
+you want. A common usage for this module is to provide a unique "Splash" screen for client accounts when 
+they log in, containing pointers on how to use the script and who to contact for more info.
 
 ### Documentation
 
@@ -8,5 +10,5 @@ The Pages module lets you create custom pages to embed within the Form Tools UI,
 
 ### Form Tools Extensions
 
-For further information about Form Tools extensions, check out the following link:
-[http://www.formtools.org/extensions.php](http://www.formtools.org/extensions.php)
+For a full list of Form Tools modules, see: 
+[https://modules.formtools.org/](https://modules.formtools.org/)
