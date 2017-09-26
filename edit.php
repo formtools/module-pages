@@ -1,35 +1,38 @@
 <?php
 
 require("../../global/library.php");
-ft_init_module_page();
-$folder = dirname(__FILE__);
-require_once("$folder/library.php");
 
-$tinymce_available = ft_check_module_available("field_type_tinymce");
+use FormTools\Core;
+use FormTools\Modules;
+
+$module = Modules::initModulePage("admin");
+$L = $module->getLangStrings();
+$root_url = Core::getRootUrl();
+
+$tinymce_available = Modules::checkModuleAvailable("field_type_tinymce");
 
 $request = array_merge($_POST, $_GET);
 $page_id = isset($request["page_id"]) ? $request["page_id"] : "";
 
-if (isset($_POST["add_page"]))
-  list($g_success, $g_message, $page_id) = pg_add_page($_POST);
+if (isset($_POST["add_page"])) {
+    list($g_success, $g_message, $page_id) = $module->addPage($_POST);
+}
 
-if (empty($page_id))
-{
+if (empty($page_id)) {
   header("location: index.php");
   exit;
 }
 
-if (isset($_POST["update_page"]))
-  list($g_success, $g_message) = pg_update_page($_POST["page_id"], $_POST);
+if (isset($_POST["update_page"])) {
+    list($g_success, $g_message) = $module->updatePage($_POST["page_id"], $_POST);
+}
 
-$page_info = pg_get_page($page_id);
+$page_info = $module->getPage($page_id);
 
 
 // this stores the default editor in the page. The values are either "codemirror", "tinymce": all
 // code editing is done through one of those editors
 $editor = ($page_info["content_type"] == "html" && $page_info["use_wysiwyg"] == "yes") ? "tinymce" : "codemirror";
-
-// ------------------------------------------------------------------------------------------------
 
 $page_vars = array();
 $page_vars["head_title"] = $L["phrase_edit_page"];
@@ -41,8 +44,7 @@ $page_vars["head_string"] =<<<EOF
   <script src="scripts/pages.js"></script>
 EOF;
 
-if ($tinymce_available)
-{
+if ($tinymce_available) {
   $page_vars["head_string"] .= "<script src=\"$g_root_url/modules/field_type_tinymce/tinymce/jquery.tinymce.js\"></script>";
 }
 
@@ -60,4 +62,4 @@ rsv.onCompleteHandler = function() {
 }
 EOF;
 
-ft_display_module_page("templates/edit.tpl", $page_vars);
+$module->displayPage("templates/edit.tpl", $page_vars);

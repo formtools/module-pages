@@ -1,10 +1,14 @@
 <?php
 
 require("../../global/library.php");
-ft_init_module_page();
-require_once("library.php");
 
-$page_vars = array();
-$page_vars["head_title"] = "{$L["module_name"]} - {$L["word_help"]}";
+use FormTools\Modules;
 
-ft_display_module_page("templates/help.tpl", $page_vars);
+$module = Modules::initModulePage("admin");
+$L = $module->getLangStrings();
+
+$page_vars = array(
+    "head_title" => "{$L["module_name"]} - {$L["word_help"]}"
+);
+
+$module->displayPage("templates/help.tpl", $page_vars);
