@@ -18,7 +18,7 @@ $page_vars = array(
 );
 
 if ($tinymce_available) {
-  $page_vars["head_string"] .= "<script src=\"$root_url/modules/field_type_tinymce/tinymce/jquery.tinymce.js\"></script>";
+    $page_vars["head_js"] = array("$root_url/modules/field_type_tinymce/tinymce/jquery.tinymce.js");
 }
 
 $page_vars["head_js"] =<<< EOF

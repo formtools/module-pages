@@ -75,7 +75,6 @@ $HOOKS = array();
 
 $FILES = array(
   "add.php",
-  "database_integrity.php",
   "edit.php",
   "help.php",
   "images/",

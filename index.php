@@ -5,7 +5,6 @@ require_once("../../global/library.php");
 use FormTools\General;
 use FormTools\Modules;
 
-
 $module = Modules::initModulePage("admin");
 $L = $module->getLangStrings();
 
@@ -25,7 +24,7 @@ $text_intro_para_2 = General::evalSmartyString($L["text_intro_para_2"], array("u
 $page_vars = array(
     "pages" => $results,
     "head_title" => $L["module_name"],
-    "pagination" => General::getPageNav($num_results, $num_pages_per_page, $page, ""),
+    "pagination" => General::getPageNav($num_results, $num_pages_per_page, $page, "", "page"),
     "js_messages" => array("word_edit", "phrase_please_confirm", "word_yes", "word_no"),
     "module_js_messages" => array("confirm_delete_page"),
     "text_intro_para_2" => $text_intro_para_2

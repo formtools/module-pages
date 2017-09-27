@@ -1,54 +1,68 @@
 <?php
 
-require("../../global/session_start.php");
+// TODO this isn't compatible with Submission Accounts yet
+
+require("../../global/library.php");
+
+use FormTools\Errors;
+use FormTools\General;
+use FormTools\Modules;
+use FormTools\Sessions;
+use FormTools\Pages;
 
 // this just checks that SOMEONE's logged in - even someone via the Submission Accounts module
-ft_check_permission("user");
-ft_include_module("pages");
+$module = Modules::initModulePage("client");
 
 $request = array_merge($_POST, $_GET);
 $page_id = $request["id"];
-$page_info = pg_get_page($page_id);
+$page_info = $module->getPage($page_id);
 
 // check permissions! The above code handles booting a user out if they're not logged in,
 // so the only case we're worried about
-$account_type = isset($_SESSION["ft"]["account"]["account_type"]) ? $_SESSION["ft"]["account"]["account_type"] : "";
-$account_id   = isset($_SESSION["ft"]["account"]["account_id"]) ? $_SESSION["ft"]["account"]["account_id"] : "";
+$account_type = Sessions::get("account.account_type");
+$account_id   = Sessions::get("account.account_id");
 
-if ($account_type == "client" && $page_info["access_type"] == "private")
-{
-  if (!in_array($account_id, $page_info["clients"]))
-	{
-	  ft_handle_error("Sorry, you do not have permissions to see this page.");
-		exit;
-	}
+$has_permission = true;
+if ($account_type == "client") {
+    if ($page_info["access_type"] == "admin") {
+        $has_permission = false;
+    }
+    if ($page_info["access_type"] == "private") {
+        if (in_array($account_id, $page_info["clients"])) {
+            $has_permission = false;
+        }
+    }
+}
+
+if (!$has_permission) {
+    Errors::handleError("Sorry, you do not have permissions to see this page.");
+    exit;
 }
 
 $content = $page_info["content"];
-switch ($page_info["content_type"])
-{
-  case "php":
-	  ob_start();
-eval($page_info["content"]);
-    $content = ob_get_contents();
-    ob_end_clean();
-    break;
-  case "smarty":
-    $content = ft_eval_smarty_string($page_info["content"]);
-    break;
+switch ($page_info["content_type"]) {
+    case "php":
+        ob_start();
+        eval($page_info["content"]);
+        $content = ob_get_contents();
+        ob_end_clean();
+        break;
+    case "smarty":
+        $content = General::evalSmartyString($page_info["content"]);
+        break;
 }
 
-// ------------------------------------------------------------------------------------------------
+$L = $module->getLangStrings();
 
+$page_vars = array(
+    "page"         => "custom_page",
+    "page_id"      => $page_id,
+    "phrase_edit_page" => $L["phrase_edit_page"],
+    "account_type" => $account_type,
+    "page_url"     => Pages::getPageUrl("custom_page"),
+    "head_title"   => "{$L["word_page"]} - {$page_info["heading"]}",
+    "page_info"    => $page_info,
+    "content"      => $content
+);
 
-$page_vars = array();
-$page_vars["page"]         = "custom_page";
-$page_vars["page_id"]      = $page_id;
-$page_vars["phrase_edit_page"] = $LANG["pages"]["phrase_edit_page"];
-$page_vars["account_type"] = $account_type;
-$page_vars["page_url"]     = ft_get_page_url("custom_page");
-$page_vars["head_title"]   = "{$LANG["pages"]["word_page"]} - {$page_info["heading"]}";
-$page_vars["page_info"]    = $page_info;
-$page_vars["content"]      = $content;
-
-ft_display_page("../../modules/pages/templates/page.tpl", $page_vars);
+$module->displayPage("../../modules/pages/templates/page.tpl", $page_vars);

@@ -23,7 +23,7 @@
     <tr>
       <td width="140" valign="top">{$L.phrase_page_name}</td>
       <td>
-      	<input type="text" name="page_name" value="" style="width:200px" maxlength="50" />
+      	<input type="text" name="page_name" value="" style="width:200px" maxlength="50" autofocus />
       	<div class="light_grey">{$L.text_page_name_desc}</div>
       </td>
     </tr>

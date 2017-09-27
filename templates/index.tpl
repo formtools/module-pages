@@ -58,7 +58,6 @@
           {/if}
         </td>
         <td class="pad_left">
-          {$page_info.access_type}
           {if $page.access_type == 'admin'}
             <span class="blue">{$LANG.phrase_admin_only}</span>
           {elseif $page.access_type == 'public'}

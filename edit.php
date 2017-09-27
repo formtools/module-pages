@@ -14,13 +14,15 @@ $tinymce_available = Modules::checkModuleAvailable("field_type_tinymce");
 $request = array_merge($_POST, $_GET);
 $page_id = isset($request["page_id"]) ? $request["page_id"] : "";
 
+$g_success = true;
+$g_message = "";
 if (isset($_POST["add_page"])) {
     list($g_success, $g_message, $page_id) = $module->addPage($_POST);
 }
 
 if (empty($page_id)) {
-  header("location: index.php");
-  exit;
+    header("location: index.php");
+    exit;
 }
 
 if (isset($_POST["update_page"])) {
@@ -34,32 +36,31 @@ $page_info = $module->getPage($page_id);
 // code editing is done through one of those editors
 $editor = ($page_info["content_type"] == "html" && $page_info["use_wysiwyg"] == "yes") ? "tinymce" : "codemirror";
 
-$page_vars = array();
-$page_vars["head_title"] = $L["phrase_edit_page"];
-$page_vars["page_id"] = $page_id;
-$page_vars["page_info"] = $page_info;
-$page_vars["tinymce_available"] = ($tinymce_available ? "yes" : "no");
-$page_vars["head_string"] =<<<EOF
-  <script src="$g_root_url/global/codemirror/js/codemirror.js"></script>
-  <script src="scripts/pages.js"></script>
-EOF;
+$page_vars = array(
+    "g_success" => $g_success,
+    "g_message" => $g_message,
+    "head_title" => $L["phrase_edit_page"],
+    "page_id" => $page_id,
+    "page_info" => $page_info,
+    "tinymce_available" => ($tinymce_available ? "yes" : "no")
+);
 
 if ($tinymce_available) {
-  $page_vars["head_string"] .= "<script src=\"$g_root_url/modules/field_type_tinymce/tinymce/jquery.tinymce.js\"></script>";
+  $page_vars["head_js"] = array("$root_url/modules/field_type_tinymce/tinymce/jquery.tinymce.js");
 }
 
-$page_vars["head_js"] =<<< EOF
+$page_vars["head_js"] =<<< END
 if (typeof pages_ns == undefined) {
-  var pages_ns = {};
+    var pages_ns = {};
 }
 
 pages_ns.current_editor = "$editor";
 var rules = [];
 rsv.onCompleteHandler = function() {
-  $("#use_wysiwyg_hidden").val($("#uwe").attr("checked") ? "yes" : "no");
-  ft.select_all(document.pages_form["selected_client_ids[]"]);
-  return true;
+    $("#use_wysiwyg_hidden").val($("#uwe").attr("checked") ? "yes" : "no");
+    ft.select_all(document.pages_form["selected_client_ids[]"]);
+    return true;
 }
-EOF;
+END;
 
 $module->displayPage("templates/edit.tpl", $page_vars);

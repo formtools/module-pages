@@ -3,9 +3,11 @@
  */
 var pages_ns = {};
 pages_ns.current_editor = null; // this is overwritten by the page. Values: "codemirror", "tinymce"
+pages_ns.tinymce_available = false;
 
 $(function() {
-  if ($("#wysiwyg_content").length && $("#tinymce_available").val() == "yes") {
+  pages_ns.tinymce_available = $("#tinymce_available").val() === "yes";
+  if ($("#wysiwyg_content").length && pages_ns.tinymce_available) {
     $("#wysiwyg_content").tinymce({
       script_url: g.root_url + "/modules/field_type_tinymce/tinymce/tiny_mce.js",
       theme:      "advanced",
@@ -73,10 +75,14 @@ pages_ns.enable_editor = function(editor) {
   if (editor == "tinymce") {
     $("#wysiwyg_div").show();
     $("#codemirror_div").hide();
-    $("#wysiwyg_content").tinymce().setContent(html_editor.getCode());
+    if (pages_ns.tinymce_available) {
+      $("#wysiwyg_content").tinymce().setContent(html_editor.getCode());
+    }
   } else {
 	  // update the CodeMirror content
-	  html_editor.setCode($("#wysiwyg_content").tinymce().getContent());
+    if (pages_ns.tinymce_available) {
+      html_editor.setCode($("#wysiwyg_content").tinymce().getContent());
+    }
     $("#wysiwyg_div").hide();
     $("#codemirror_div").show();
   }

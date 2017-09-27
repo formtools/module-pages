@@ -8,6 +8,7 @@ use FormTools\General;
 use FormTools\Menus;
 use FormTools\Module as FormToolsModule;
 use FormTools\Modules;
+use FormTools\Pages as CorePages; // just for clarity
 use PDO, PDOException;
 
 
@@ -33,6 +34,10 @@ class Module extends FormToolsModule
         "word_help"       => array("help.php", false)
     );
 
+    public function __construct() {
+        parent::__construct(Core::$user->getLang());
+        CorePages::registerPage("custom_page", "/modules/pages/page.php");
+    }
 
     /**
      * The installation script for the Pages module. This creates the module_pages database table.
@@ -184,40 +189,42 @@ class Module extends FormToolsModule
             $content = $info["wysiwyg_content"];
         }
 
-        $db->query("
-            INSERT INTO {PREFIX}module_pages (page_name, content_type, access_type, use_wysiwyg, heading, content)
-            VALUES (:page_name, :content_type, :access_type, :use_wysiwyg, :heading, :content
-        ");
-        $db->bindAll(array(
-            "page_name" => $info["page_name"],
-            "content_type" => $content_type,
-            "access_type" => $access_type,
-            "use_wysiwyg" => $use_wysiwyg,
-            "heading" => $info["heading"],
-            "content" => $content
-        ));
-        $db->execute();
+        $success = true;
+        $message = $LANG["notify_page_added"];
+        $page_id = "";
 
-        $page_id = $db->getInsertId();
+        try {
+            $db->query("
+                INSERT INTO {PREFIX}module_pages (page_name, content_type, access_type, use_wysiwyg, heading, content)
+                VALUES (:page_name, :content_type, :access_type, :use_wysiwyg, :heading, :content)
+            ");
+            $db->bindAll(array(
+                "page_name" => $info["page_name"],
+                "content_type" => $content_type,
+                "access_type" => $access_type,
+                "use_wysiwyg" => $use_wysiwyg,
+                "heading" => $info["heading"],
+                "content" => $content
+            ));
+            $db->execute();
 
-        if ($access_type == "private") {
-            foreach ($info["selected_client_ids"] as $client_id) {
-                $db->query("
-                    INSERT INTO {PREFIX}module_pages_clients (page_id, client_id)
-                    VALUES (:page_id, :client_id)
-                ");
-                $db->bindAll(array(
-                    "page_id" => $page_id,
-                    "client_id" => $client_id
-                ));
-                $db->execute();
+            $page_id = $db->getInsertId();
+
+            if ($access_type == "private" && isset($info["selected_client_ids"])) {
+                foreach ($info["selected_client_ids"] as $client_id) {
+                    $db->query("
+                        INSERT INTO {PREFIX}module_pages_clients (page_id, client_id)
+                        VALUES (:page_id, :client_id)
+                    ");
+                    $db->bindAll(array(
+                        "page_id" => $page_id,
+                        "client_id" => $client_id
+                    ));
+                    $db->execute();
+                }
             }
-        }
-
-        if ($page_id != 0) {
-            $success = true;
-            $message = $LANG["notify_page_added"];
-        } else {
+        } catch (PDOException $e) {
+            print_r($e->getMessage());
             $success = false;
             $message = $LANG["notify_page_not_added"];
         }
@@ -253,12 +260,10 @@ class Module extends FormToolsModule
         $db->bind("page_identifier", "page_{$page_id}");
         $db->execute();
 
-        // this is dumb, but better than nothing. If we just updated any menus, re-cache the admin menu
-        // just in case
-        // TODO
-//        if (mysql_affected_rows()) {
-//            ft_cache_account_menu(1);
-//        }
+        // this is dumb, but better than nothing. If we just updated any menus, re-cache the admin menu just in case
+        if ($db->numRows() > 0) {
+            Menus::cacheAccountMenu(1);
+        }
 
         return array(true, $L["notify_delete_page"]);
     }
@@ -314,10 +319,14 @@ class Module extends FormToolsModule
             $db->query("SELECT * FROM {PREFIX}module_pages ORDER BY heading LIMIT $first_item, $num_per_page");
         }
         $db->execute();
+        $results = $db->fetchAll();
+
+        $db->query("SELECT count(*) FROM {PREFIX}module_pages");
+        $db->execute();
 
         return array(
-            "results" => $db->fetchAll(),
-            "num_results" => $db->numRows()
+            "results" => $results,
+            "num_results" => $db->fetch(PDO::FETCH_COLUMN)
         );
     }
 
@@ -325,6 +334,7 @@ class Module extends FormToolsModule
     public function updatePage($page_id, $info)
     {
         $db = Core::$db;
+        $LANG = Core::$L;
 
         $content_type = $info["content_type"];
         $use_wysiwyg = $info["use_wysiwyg_hidden"];
@@ -360,7 +370,7 @@ class Module extends FormToolsModule
         $db->bind("page_id", $page_id);
         $db->execute();
 
-        if ($access_type == "private") {
+        if ($access_type == "private" && isset($info["selected_client_ids"])) {
             foreach ($info["selected_client_ids"] as $client_id) {
                 $db->query("INSERT INTO {PREFIX}module_pages_clients (page_id, client_id) VALUES (:page_id, :client_id)");
                 $db->bindAll(array(
@@ -371,8 +381,6 @@ class Module extends FormToolsModule
             }
         }
 
-        $L = $this->getLangStrings();
-
-        return array(true, $L["notify_page_updated"]);
+        return array(true, $LANG["notify_page_updated"]);
     }
 }
