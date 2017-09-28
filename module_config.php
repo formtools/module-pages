@@ -1,10 +1,9 @@
 <?php
 
 
-    $STRUCTURE = array();
-$STRUCTURE["module"] = array();
-$STRUCTURE["module"]["tables"] = array();
-$STRUCTURE["module"]["tables"]["module_pages"] = array(
+$STRUCTURE = array();
+$STRUCTURE["tables"] = array();
+$STRUCTURE["tables"]["module_pages"] = array(
     array(
         "Field"   => "page_id",
         "Type"    => "mediumint(8) unsigned",
@@ -55,7 +54,7 @@ $STRUCTURE["module"]["tables"]["module_pages"] = array(
         "Default" => ""
     )
 );
-$STRUCTURE["module"]["tables"]["module_pages_clients"] = array(
+$STRUCTURE["tables"]["module_pages_clients"] = array(
     array(
         "Field"   => "page_id",
         "Type"    => "mediumint(9) unsigned",

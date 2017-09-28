@@ -31,7 +31,6 @@ if (isset($_POST["update_page"])) {
 
 $page_info = $module->getPage($page_id);
 
-
 // this stores the default editor in the page. The values are either "codemirror", "tinymce": all
 // code editing is done through one of those editors
 $editor = ($page_info["content_type"] == "html" && $page_info["use_wysiwyg"] == "yes") ? "tinymce" : "codemirror";

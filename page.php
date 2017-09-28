@@ -1,10 +1,7 @@
 <?php
 
-// TODO this isn't compatible with Submission Accounts yet
-
 require("../../global/library.php");
 
-use FormTools\Errors;
 use FormTools\General;
 use FormTools\Modules;
 use FormTools\Sessions;
@@ -34,25 +31,28 @@ if ($account_type == "client") {
     }
 }
 
-if (!$has_permission) {
-    Errors::handleError("Sorry, you do not have permissions to see this page.");
-    exit;
-}
-
-$content = $page_info["content"];
-switch ($page_info["content_type"]) {
-    case "php":
-        ob_start();
-        eval($page_info["content"]);
-        $content = ob_get_contents();
-        ob_end_clean();
-        break;
-    case "smarty":
-        $content = General::evalSmartyString($page_info["content"]);
-        break;
-}
-
 $L = $module->getLangStrings();
+
+// pretty crumby. We need a consistent way to handle in-page errors
+if (!$has_permission) {
+    $head_title = "";
+    $content = "<div class=\"error\"><div style=\"padding: 8px\">" . $L["notify_no_permissions"] . "</div></div>";
+    $page_info["heading"] = "Error";
+} else {
+    $head_title = "{$L["word_page"]} - {$page_info["heading"]}";
+    $content = $page_info["content"];
+    switch ($page_info["content_type"]) {
+        case "php":
+            ob_start();
+            eval($page_info["content"]);
+            $content = ob_get_contents();
+            ob_end_clean();
+            break;
+        case "smarty":
+            $content = General::evalSmartyString($page_info["content"]);
+            break;
+    }
+}
 
 $page_vars = array(
     "page"         => "custom_page",
@@ -60,7 +60,7 @@ $page_vars = array(
     "phrase_edit_page" => $L["phrase_edit_page"],
     "account_type" => $account_type,
     "page_url"     => Pages::getPageUrl("custom_page"),
-    "head_title"   => "{$L["word_page"]} - {$page_info["heading"]}",
+    "head_title"   => $head_title,
     "page_info"    => $page_info,
     "content"      => $content
 );

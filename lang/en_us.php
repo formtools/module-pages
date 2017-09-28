@@ -50,3 +50,4 @@ $L["notify_no_pages"] = "Currently, you don't have any pages in the database. Cl
 $L["notify_delete_page"] = "The page has been deleted.";
 $L["notify_problem_installing"] = "There following error occurred when trying to create the database tables for this module: <b>{\$error}</b>";
 $L["notify_module_uninstalled"] = "The Pages module has been uninstalled. If any user account (admin or client) was using a Page in their menu, it has been removed.";
+$L["notify_no_permissions"] = "Sorry, you do not have permissions to see this page.";

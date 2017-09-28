@@ -32,7 +32,7 @@
       <td><input type="text" name="heading" value="" style="width:100%" /></td>
     </tr>
     <tr>
-      <td>Content type</td>
+      <td>Content Type</td>
       <td>
       	<input type="radio" name="content_type" value="html" id="ct1" onclick="pages_ns.change_content_type(this.value)" checked />
       	  <label for="ct1">{$LANG.word_html}</label>
@@ -45,11 +45,12 @@
     <tr>
       <td valign="top">{$L.phrase_page_content}</td>
       <td>
-      	<div id="wysiwyg_div">
+        {* onload we show the tinyMCE field by default IFF it's available. Otherwise show codemirror *}
+      	<div id="wysiwyg_div" {if $tinymce_available == "no"}style="display: none"{/if}>
       	  <textarea name="wysiwyg_content" id="wysiwyg_content" style="width:100%; height:300px"></textarea>
       	</div>
 
-      	<div id="codemirror_div" style="display:none">
+      	<div id="codemirror_div" {if $tinymce_available == "yes"}style="display: none"{/if}>
       	  <div style="border: 1px solid #666666; padding: 3px">
       	    <textarea name="codemirror_content" id="codemirror_content" style="width:100%; height:300px"></textarea>
       	  </div>
@@ -107,7 +108,7 @@
       	  <tr>
       	    <td>
       	      {clients_dropdown name_id="available_client_ids[]" multiple="true" multiple_action="hide"
-      		      clients=$page_info.clients size="4" style="width: 240px"}
+      		      clients=[] size="4" style="width: 240px"}
       	    </td>
       	    <td align="center" valign="middle" width="100">
       	      <input type="button" value="{$LANG.word_add_uc_rightarrow}"
@@ -117,7 +118,7 @@
       	    </td>
       	    <td>
       	      {clients_dropdown name_id="selected_client_ids[]" multiple="true" multiple_action="show"
-                clients=$page_info.clients size="4" style="width: 240px"}
+                clients=[] size="4" style="width: 240px"}
       	    </td>
       	  </tr>
       	  </table>

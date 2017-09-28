@@ -87,7 +87,7 @@ pages_ns.enable_editor = function(editor) {
     $("#codemirror_div").show();
   }
   pages_ns.current_editor = editor;
-}
+};
 
 
 pages_ns.delete_page = function(page_id) {
@@ -112,4 +112,4 @@ pages_ns.delete_page = function(page_id) {
   });
 
   return false;
-}
+};
