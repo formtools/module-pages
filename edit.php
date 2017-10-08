@@ -11,7 +11,6 @@ $root_url = Core::getRootUrl();
 
 $tinymce_available = Modules::checkModuleAvailable("field_type_tinymce");
 
-$request = array_merge($_POST, $_GET);
 $page_id = isset($request["page_id"]) ? $request["page_id"] : "";
 
 $g_success = true;

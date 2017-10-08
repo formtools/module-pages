@@ -10,7 +10,6 @@ $module = Modules::initModulePage("admin");
 $LANG = Core::$L;
 $L = $module->getLangStrings();
 
-$request = array_merge($_POST, $_GET);
 $page_id = $request["page_id"];
 $page_info = $module->getPage($page_id);
 

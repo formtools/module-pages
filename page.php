@@ -10,7 +10,6 @@ use FormTools\Pages;
 // this just checks that SOMEONE's logged in - even someone via the Submission Accounts module
 $module = Modules::initModulePage("client");
 
-$request = array_merge($_POST, $_GET);
 $page_id = $request["id"];
 $page_info = $module->getPage($page_id);
 

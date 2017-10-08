@@ -5,6 +5,7 @@ namespace FormTools\Modules\Pages;
 
 use FormTools\Core;
 use FormTools\General;
+use FormTools\Hooks;
 use FormTools\Menus;
 use FormTools\Module as FormToolsModule;
 use FormTools\Modules;
@@ -18,9 +19,9 @@ class Module extends FormToolsModule
     protected $moduleDesc = "This module lets you define your own custom pages to link to from within the Form Tools UI. This lets you to add help pages, client splash pages or any other custom information.";
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
-    protected $authorLink = "http://formtools.org";
-    protected $version = "2.0.0";
-    protected $date = "2017-09-25";
+    protected $authorLink = "https://formtools.org";
+    protected $version = "2.0.1";
+    protected $date = "2017-10-07";
     protected $originLanguage = "en_us";
     protected $jsFiles = array(
         "{FTROOT}/global/codemirror/js/codemirror.js",
@@ -87,6 +88,9 @@ class Module extends FormToolsModule
             $success = false;
             $message = General::evalSmartyString($L["notify_problem_installing"], array("error" => $e->getMessage()));
         }
+
+        Hooks::registerHook("code", "pages", "middle", "FormTools\\Menus::getAdminMenuPagesDropdown", "addPagesMenuItems", 20, true);
+        Hooks::registerHook("code", "pages", "middle", "FormTools\\Menus::getClientMenuPagesDropdown", "addPagesMenuItems", 20, true);
 
         return array($success, $message);
     }
@@ -224,7 +228,6 @@ class Module extends FormToolsModule
                 }
             }
         } catch (PDOException $e) {
-            print_r($e->getMessage());
             $success = false;
             $message = $LANG["notify_page_not_added"];
         }
@@ -382,5 +385,35 @@ class Module extends FormToolsModule
         }
 
         return array(true, $LANG["notify_page_updated"]);
+    }
+
+    public function addPagesMenuItems ($params)
+    {
+        $LANG = Core::$L;
+        $pages_info = $this->getPages("all");
+        $pages = $pages_info["results"];
+
+        $select_lines = $params["select_lines"];
+
+        if (count($pages) > 0) {
+            $select_lines[] = array(
+                "type" => "optgroup_open",
+                "label" => $LANG["phrase_pages_module"]
+            );
+            foreach ($pages as $page) {
+                $page_id = $page["page_id"];
+                $page_name = $page["page_name"];
+                $select_lines[] = array(
+                    "type" => "option",
+                    "k" => "page_{$page_id}",
+                    "v" => "$page_name!!"
+                );
+            }
+            $select_lines[] = array("type" => "optgroup_close");
+        }
+
+        return array(
+            "select_lines" => $select_lines
+        );
     }
 }
