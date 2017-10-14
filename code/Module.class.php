@@ -20,12 +20,22 @@ class Module extends FormToolsModule
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
-    protected $version = "2.0.1";
-    protected $date = "2017-10-07";
+    protected $version = "2.0.2";
+    protected $date = "2017-10-14";
     protected $originLanguage = "en_us";
     protected $jsFiles = array(
-        "{FTROOT}/global/codemirror/js/codemirror.js",
+        "{FTROOT}/global/codemirror/lib/codemirror.js",
+        "{FTROOT}/global/codemirror/mode/xml/xml.js",
+        "{FTROOT}/global/codemirror/mode/php/php.js",
+        "{FTROOT}/global/codemirror/mode/smarty/smarty.js",
+        "{FTROOT}/global/codemirror/mode/htmlmixed/htmlmixed.js",
+        "{FTROOT}/global/codemirror/mode/css/css.js",
+        "{FTROOT}/global/codemirror/mode/javascript/javascript.js",
+        "{FTROOT}/global/codemirror/mode/clike/clike.js",
         "{MODULEROOT}/scripts/pages.js"
+    );
+    protected $cssFiles = array(
+        "{FTROOT}/global/codemirror/lib/codemirror.css",
     );
 
     protected $nav = array(

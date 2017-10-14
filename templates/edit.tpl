@@ -58,18 +58,13 @@
 
         <!-- CodeMirror is used for everything except the WYSIWYG editor -->
       	<div id="codemirror_div" {if $page_info.use_wysiwyg == "yes" && $page_info.content_type == "html"}style="display: none"{/if}>
-      	  <div style="border: 1px solid #666666; padding: 3px">
+      	  <div style="border: 1px solid #999999; padding: 3px">
       	    <textarea name="codemirror_content" id="codemirror_content" style="width:100%; height:300px">{$page_info.content|escape}</textarea>
       	  </div>
 
       	  <script>
-      	  {* load the appropriate parser on page load *}
-      	  var html_editor = new CodeMirror.fromTextArea("codemirror_content", {literal}{{/literal}
-        	  parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js",
-                         "../contrib/php/js/tokenizephp.js", "../contrib/php/js/parsephp.js", "../contrib/php/js/parsephphtmlmixed.js"],
-            stylesheet: ["{$g_root_url}/global/codemirror/css/xmlcolors.css", "{$g_root_url}/global/codemirror/css/jscolors.css",
-                         "{$g_root_url}/global/codemirror/css/csscolors.css", "{$g_root_url}/global/codemirror/contrib/php/css/phpcolors.css"],
-            path:        "{$g_root_url}/global/codemirror/js/"
+      	  var html_editor = new CodeMirror.fromTextArea(document.getElementById("codemirror_content"), {literal}{{/literal}
+        	  mode: "xml"
       	  {literal}});{/literal}
       	  </script>
       	</div>

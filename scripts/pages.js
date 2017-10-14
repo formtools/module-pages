@@ -52,17 +52,29 @@ pages_ns.toggle_wysiwyg_field = function(is_checked) {
 pages_ns.change_content_type = function(content_type) {
   var is_html = (content_type == "html") ? true : false;
 
+  var useTinyMce = $("#uwe").attr("checked");
+
   // the "Use WYSIWYG editor" checkbox is only enabled if the user is entering HTML
   $("#uwe").attr("disabled", !is_html);
 
   // if the user just switched to HTML and the "Use WYWIWYG" editor is checked, display tinyMCE
-  if (is_html && $("#uwe").attr("checked") && pages_ns.current_editor != "tinymce") {
+  if (is_html && useTinyMce && pages_ns.current_editor != "tinymce") {
     pages_ns.enable_editor("tinymce");
   }
   if (!is_html && pages_ns.current_editor != "codemirror") {
     pages_ns.enable_editor("codemirror");
   }
-}
+
+  if (!useTinyMce) {
+    if (content_type === "html") {
+      html_editor.setOption("mode", "xml");
+    } else if (content_type === "php") {
+      html_editor.setOption("mode", "text/x-php");
+    } else if (content_type === "php") {
+      html_editor.setOption("mode", "smarty");
+    }
+  }
+};
 
 
 /**
