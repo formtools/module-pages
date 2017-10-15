@@ -51,17 +51,13 @@
       	</div>
 
       	<div id="codemirror_div" {if $tinymce_available == "yes"}style="display: none"{/if}>
-      	  <div style="border: 1px solid #666666; padding: 3px">
+      	  <div style="border: 1px solid #999999; padding: 3px">
       	    <textarea name="codemirror_content" id="codemirror_content" style="width:100%; height:300px"></textarea>
       	  </div>
 
-      	  <script type="text/javascript">
-      	  var html_editor = new CodeMirror.fromTextArea("codemirror_content", {literal}{{/literal}
-            parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js",
-                         "../contrib/php/js/tokenizephp.js", "../contrib/php/js/parsephp.js", "../contrib/php/js/parsephphtmlmixed.js"],
-            stylesheet: ["{$g_root_url}/global/codemirror/css/xmlcolors.css", "{$g_root_url}/global/codemirror/css/jscolors.css",
-                         "{$g_root_url}/global/codemirror/css/csscolors.css", "{$g_root_url}/global/codemirror/contrib/php/css/phpcolors.css"],
-            path:        "{$g_root_url}/global/codemirror/js/"
+      	  <script>
+      	  var html_editor = new CodeMirror.fromTextArea(document.getElementById("codemirror_content"), {literal}{{/literal}
+            mode: "xml"
       	  {literal}});{/literal}
       	  </script>
       	</div>

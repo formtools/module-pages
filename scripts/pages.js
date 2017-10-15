@@ -7,18 +7,21 @@ pages_ns.tinymce_available = false;
 
 $(function() {
   pages_ns.tinymce_available = $("#tinymce_available").val() === "yes";
+
   if ($("#wysiwyg_content").length && pages_ns.tinymce_available) {
-    $("#wysiwyg_content").tinymce({
-      script_url: g.root_url + "/modules/field_type_tinymce/tinymce/tiny_mce.js",
-      theme:      "advanced",
-      theme_advanced_toolbar_location: "top",
-      theme_advanced_toolbar_align: "left",
-      theme_advanced_buttons1: "bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,blockquote,hr,|,undo,redo,link,unlink,|,fontselect,fontsizeselect",
-      theme_advanced_buttons2: "forecolorpicker,backcolorpicker,|,sub,sup,code",
-      theme_advanced_buttons3: "",
-      theme_advanced_resize_horizontal: false,
-      theme_advanced_path_location: "bottom"
+
+    tinymce.init({
+      selector: "#wysiwyg_content",
+      skin: "lightgray",
+      toolbar: "bold italic underline strikethrough | bullist numlist | outdent indent | blockquote hr | undo redo link unlink | fontselect fontsizeselect | forecolor backcolor | subscript superscript code",
+      plugins: "hr link textcolor lists",
+      branding: false,
+      menubar: false,
+      elementpath: false,
+      statusbar: true,
+      resize: true
     });
+
   }
 });
 
@@ -41,7 +44,7 @@ pages_ns.toggle_wysiwyg_field = function(is_checked) {
   } else {
     pages_ns.enable_editor("codemirror");
   }
-}
+};
 
 
 /**
@@ -88,15 +91,17 @@ pages_ns.enable_editor = function(editor) {
     $("#wysiwyg_div").show();
     $("#codemirror_div").hide();
     if (pages_ns.tinymce_available) {
-      $("#wysiwyg_content").tinymce().setContent(html_editor.getCode());
+      tinymce.get("wysiwyg_content").setContent(html_editor.getValue());
     }
   } else {
 	  // update the CodeMirror content
     if (pages_ns.tinymce_available) {
-      html_editor.setCode($("#wysiwyg_content").tinymce().getContent());
+      html_editor.setValue(tinymce.get("wysiwyg_content").getContent());
     }
     $("#wysiwyg_div").hide();
     $("#codemirror_div").show();
+
+    html_editor.refresh();
   }
   pages_ns.current_editor = editor;
 };

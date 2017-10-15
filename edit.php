@@ -44,8 +44,17 @@ $page_vars = array(
 );
 
 if ($tinymce_available) {
-  $page_vars["head_js"] = array("$root_url/modules/field_type_tinymce/tinymce/jquery.tinymce.js");
+    $page_vars["js_files"] = array("$root_url/modules/field_type_tinymce/tinymce/tinymce.min.js");
 }
+
+$page_vars["head_css"] =<<< END
+body .mce-ico {
+    font-size: 13px;
+}
+body .mce-btn button {
+    padding: 3px 5px 3px 7px;
+}
+END;
 
 $page_vars["head_js"] =<<< END
 if (typeof pages_ns == undefined) {

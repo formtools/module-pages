@@ -53,13 +53,13 @@
       <td>
 
       	<div id="wysiwyg_div" {if $page_info.content_type != "html" || $page_info.use_wysiwyg == "no"}style="display:none"{/if}>
-      	  <textarea name="wysiwyg_content" id="wysiwyg_content" style="width:100%; height:300px">{$page_info.content}</textarea>
+      	  <textarea name="wysiwyg_content" id="wysiwyg_content" style="width: 100%; height:300px">{$page_info.content}</textarea>
       	</div>
 
         <!-- CodeMirror is used for everything except the WYSIWYG editor -->
       	<div id="codemirror_div" {if $page_info.use_wysiwyg == "yes" && $page_info.content_type == "html"}style="display: none"{/if}>
       	  <div style="border: 1px solid #999999; padding: 3px">
-      	    <textarea name="codemirror_content" id="codemirror_content" style="width:100%; height:300px">{$page_info.content|escape}</textarea>
+      	    <textarea name="codemirror_content" id="codemirror_content" style="width:520px; height:300px">{$page_info.content|escape}</textarea>
       	  </div>
 
       	  <script>
