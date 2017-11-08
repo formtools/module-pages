@@ -1,4 +1,4 @@
-{include file='modules_header.tpl'}
+{ft_include file='modules_header.tpl'}
 
   <a href="{$g_root_url}/modules/pages/view.php?page_id={$page_id}" style="float:right" title="{$L.phrase_view_page}"><img src="{$theme_url}/images/admin_view.png" border="0" /></a>
 
@@ -15,7 +15,7 @@
   </tr>
   </table>
 
-  {include file='messages.tpl'}
+  {ft_include file='messages.tpl'}
 
   <form action="edit.php" method="post" name="pages_form" onsubmit="return rsv.validate(this, rules)">
     <input type="hidden" name="page_id" value="{$page_id}" />
@@ -150,4 +150,4 @@
 
   </form>
 
-{include file='modules_footer.tpl'}
+{ft_include file='modules_footer.tpl'}

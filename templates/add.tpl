@@ -1,4 +1,4 @@
-{include file='modules_header.tpl'}
+{ft_include file='modules_header.tpl'}
 
   <table cellpadding="0" cellspacing="0">
   <tr>
@@ -13,7 +13,7 @@
   </tr>
   </table>
 
-  {include file='messages.tpl'}
+  {ft_include file='messages.tpl'}
 
   <form action="edit.php" method="post" name="pages_form" onsubmit="return rsv.validate(this, rules)">
     <input type="hidden" name="use_wysiwyg_hidden" id="use_wysiwyg_hidden" value="" />
@@ -135,5 +135,4 @@
 
   </form>
 
-
-{include file='modules_footer.tpl'}
+{ft_include file='modules_footer.tpl'}

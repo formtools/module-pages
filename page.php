@@ -40,6 +40,7 @@ if (!$has_permission) {
 } else {
     $head_title = "{$L["word_page"]} - {$page_info["heading"]}";
     $content = $page_info["content"];
+
     switch ($page_info["content_type"]) {
         case "php":
             ob_start();
