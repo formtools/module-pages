@@ -53,7 +53,7 @@ pages_ns.toggle_wysiwyg_field = function(is_checked) {
  * or may not be relevant.
  */
 pages_ns.change_content_type = function(content_type) {
-  var is_html = (content_type == "html") ? true : false;
+  var is_html = content_type == "html";
 
   var useTinyMce = $("#uwe").attr("checked");
 

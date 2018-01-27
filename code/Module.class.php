@@ -9,8 +9,8 @@ use FormTools\Hooks;
 use FormTools\Menus;
 use FormTools\Module as FormToolsModule;
 use FormTools\Modules;
-use FormTools\Pages as CorePages; // just for clarity
-use PDO, PDOException;
+use FormTools\Pages as CorePages;
+use PDO, Exception;
 
 
 class Module extends FormToolsModule
@@ -20,8 +20,8 @@ class Module extends FormToolsModule
     protected $author = "Ben Keen";
     protected $authorEmail = "ben.keen@gmail.com";
     protected $authorLink = "https://formtools.org";
-    protected $version = "2.0.4";
-    protected $date = "2017-11-07";
+    protected $version = "2.0.5";
+    protected $date = "2018-01-27";
     protected $originLanguage = "en_us";
     protected $jsFiles = array(
         "{FTROOT}/global/codemirror/lib/codemirror.js",
@@ -57,7 +57,6 @@ class Module extends FormToolsModule
     {
         $db = Core::$db;
 
-        // our create table query
         $queries = array();
         $queries[] = "
             CREATE TABLE {PREFIX}module_pages (
@@ -85,22 +84,17 @@ class Module extends FormToolsModule
         $success = true;
         $message = "";
         try {
-            $db->beginTransaction();
             foreach ($queries as $query) {
                 $db->query($query);
                 $db->execute();
             }
-            $db->processTransaction();
-
-        } catch (PDOException $e) {
-            $db->rollbackTransaction();
+        } catch (Exception $e) {
             $L = $this->getLangStrings();
             $success = false;
             $message = General::evalSmartyString($L["notify_problem_installing"], array("error" => $e->getMessage()));
         }
 
-        Hooks::registerHook("code", "pages", "middle", "FormTools\\Menus::getAdminMenuPagesDropdown", "addPagesMenuItems", 20, true);
-        Hooks::registerHook("code", "pages", "middle", "FormTools\\Menus::getClientMenuPagesDropdown", "addPagesMenuItems", 20, true);
+        $this->resetHooks();
 
         return array($success, $message);
     }
@@ -126,8 +120,6 @@ class Module extends FormToolsModule
         $success = true;
 
         try {
-            $db->beginTransaction();
-
             $db->query("SELECT page_id FROM {PREFIX}module_pages");
             $db->execute();
             $rows = $db->fetchAll();
@@ -154,13 +146,26 @@ class Module extends FormToolsModule
             $L = $this->getLangStrings();
             $message = $L["notify_module_uninstalled"];
 
-        } catch (PDOException $e) {
-            $db->rollbackTransaction();
+        } catch (Exception $e) {
             $success = false;
             $message = $e->getMessage();
         }
 
         return array($success, $message);
+    }
+
+
+    public function upgrade ($module_id, $old_module_version)
+    {
+        $this->resetHooks();
+    }
+
+
+    public function resetHooks()
+    {
+        $this->clearHooks();
+        Hooks::registerHook("code", "pages", "middle", "FormTools\\Menus::getAdminMenuPagesDropdown", "addPagesMenuItems", 20, true);
+        Hooks::registerHook("code", "pages", "middle", "FormTools\\Menus::getClientMenuPagesDropdown", "addPagesMenuItems", 20, true);
     }
 
 
@@ -237,7 +242,7 @@ class Module extends FormToolsModule
                     $db->execute();
                 }
             }
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             $success = false;
             $message = $LANG["notify_page_not_added"];
         }
@@ -416,7 +421,7 @@ class Module extends FormToolsModule
                 $select_lines[] = array(
                     "type" => "option",
                     "k" => "page_{$page_id}",
-                    "v" => "$page_name!!"
+                    "v" => "$page_name"
                 );
             }
             $select_lines[] = array("type" => "optgroup_close");
