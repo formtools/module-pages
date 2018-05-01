@@ -24,7 +24,7 @@ if ($account_type == "client") {
         $has_permission = false;
     }
     if ($page_info["access_type"] == "private") {
-        if (in_array($account_id, $page_info["clients"])) {
+        if (!in_array($account_id, $page_info["clients"])) {
             $has_permission = false;
         }
     }
