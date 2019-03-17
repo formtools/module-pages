@@ -37,6 +37,7 @@ $L["phrase_add_new_page"] = "add a new page";
 $L["phrase_change_your_settings"] = "change your settings";
 $L["phrase_display_custom_pages"] = "display all of your custom pages";
 $L["phrase_view_page"] = "View Page";
+$L["phrase_pages_module"] = "Pages module";
 
 $L["confirm_delete_page"] = "Are you sure you want to delete this page?";
 
@@ -51,3 +52,6 @@ $L["notify_delete_page"] = "The page has been deleted.";
 $L["notify_problem_installing"] = "There following error occurred when trying to create the database tables for this module: <b>{\$error}</b>";
 $L["notify_module_uninstalled"] = "The Pages module has been uninstalled. If any user account (admin or client) was using a Page in their menu, it has been removed.";
 $L["notify_no_permissions"] = "Sorry, you do not have permissions to see this page.";
+$L["notify_page_updated"] = "The page has been updated.";
+$L["notify_page_not_added"] = "The page could not be added.";
+$L["notify_page_added"] = "The page has been added.";
